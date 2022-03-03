@@ -1,0 +1,81 @@
+\documentclass[aspectratio=169]{OTHAWbeamer}
+% other formats possible, e.g. aspectratio=43 or aspectration=169
+
+%\usepackage{ngerman}
+
+\usepackage[utf8]{inputenc}
+\usepackage{tikz}
+\usepackage{etex}
+
+\title[Kurztitel]{Total toller Titel}
+\subtitle{mit Untertitel}
+\author[Mustermann]{Erika Mustermann}
+\institute{Fakultät XXX}
+
+\email{e.mustermann@oth-aw.de}
+%\authortwo{Max Mustermann}% optional
+%\emailtwo{max\_mustermann@genua.de}
+\place{Amberg}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\frame{
+\frametitle{Inhalt}
+
+\tableofcontents
+}
+
+\section{Section Foogoo}
+\begin{frame}
+\frametitle{Test}
+
+\begin{itemize}
+\item<1-> Item 1
+\item<2-> Item 2
+\begin{itemize}
+\item Bla
+\item Blub
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\subsection{Subsection Bar1}
+\begin{frame}
+\frametitle{Test}
+
+\begin{enumerate}
+\item Enum 1
+\pause
+\item Enum 2
+\end{enumerate}
+\end{frame}
+
+\subsection{Subsection Bar2}
+\begin{frame}
+\frametitle{Toast}
+
+\begin{block}{Block}
+Inhalt Block.
+\end{block}
+\end{frame}
+
+\section{Section Bar}
+\begin{frame}
+\frametitle{Frametitle}
+\framesubtitle{Frame subtitle}
+
+\begin{center}
+Befülle mich!
+\end{center}
+\end{frame}
+
+\begin{frame}
+\frametitle{Das Ende.}
+\begin{center}
+\scalebox{2}{Weitere Fragen?}
+\end{center}
+\end{frame}
+\end{document}
+
