@@ -1,22 +1,24 @@
-\documentclass[aspectratio=169]{OTHAWbeamer}
+\documentclass[aspectratio=169, lecture]{OTHAWbeamer}
+\let\Tiny=\tiny  % remove annoying warning 2
 % other formats possible, e.g. aspectratio=43 or aspectration=169
+% lecture argument adds the subtitle to the footline
 
-%\usepackage{ngerman}
+\usepackage{ngerman}
 
 \usepackage[utf8]{inputenc}
-\usepackage{tikz}
+%\usepackage{tikz}
 \usepackage{etex}
 
 \title[Kurztitel]{Total toller Titel}
-\subtitle{mit Untertitel}
+\subtitle{Untertitel}
 \author[Mustermann]{Erika Mustermann}
-\institute{Fakultät XXX}
+\place{OTH Amberg-Weiden}
+\date{\today}
+%\institute{Fakultät XXX}
 
 \email{e.mustermann@oth-aw.de}
 %\authortwo{Max Mustermann}% optional
 %\emailtwo{max\_mustermann@genua.de}
-\place{Amberg}
-\date{\today}
 
 \begin{document}
 \maketitle
@@ -28,6 +30,7 @@
 }
 
 \section{Section Foogoo}
+
 \begin{frame}
 \frametitle{Test}
 

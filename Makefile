@@ -2,7 +2,7 @@
 # Edit here
 ######################################################################
 # Name of document
-TEX = $(wildcard *.tex)
+TEX = oth-aw-beamer.tex
 
 # Additional sources
 SOURCES = $(wildcard *.tex images/* *sty)

@@ -1,10 +1,11 @@
 % Vorlage für LaTeX-Beamer nach dem Corporate Design der OTH Amberg-Weiden
 % Autoren: Andreas Aßmuth, Matthias Söllner, Daniel Loebenberger
-% Aktuelle Version: v0.02
-% Stand: 09.01.2019
+% Aktuelle Version: v0.04
+% Stand: 27.03.2023
 %
 % Changelog:
 %
+% v0.04: Neues Corporate Design umgesetzt (27.03.2023)
 % v0.03: Überarbeitung Titelfolie, Ausrichtung Information Fußzeile,
 %        Positionierung Logos, Optionen lecture, tochead (09.01.2019)
 % v0.02: Anpassung der Vorlage (14.08.2015)
@@ -13,9 +14,9 @@
 % v0.01: Erstellung der Klassendatei (20.11.2013)
 %
 
-\ProvidesClass{OTHAWbeamer}[2019/01/09 v0.03 Vorlage Ostbayerische Technische Hochschule Amberg-Weiden]
+\ProvidesClass{OTHAWbeamer}[2023/03/27 v0.04 Vorlage Ostbayerische Technische Hochschule Amberg-Weiden]
 %
-\PassOptionsToPackage{ngerman}{babel}
+\PassOptionsToPackage{english,greek,ngerman}{babel}
 \DeclareOption*{\PassOptionsToClass{\CurrentOption}{beamer}}
 
 \newif\if@lecture
@@ -23,6 +24,22 @@
 
 \newif\if@tochead
 \@tocheadfalse
+
+\newif\if@showerlaeuterung
+\@showerlaeuterungfalse
+
+\newif\if@notes
+\@notesfalse
+
+\newif\if@amberg
+\@ambergfalse
+
+\newif\if@weiden
+\@ambergfalse
+
+\newif\if@amwen
+\@amwentrue
+
 
 \DeclareOption{tochead}{%
     \@tocheadtrue
@@ -36,10 +53,41 @@
   \@tocheadfalse
 }
 
+\DeclareOption{annotate}{
+  \@showerlaeuterungtrue
+}
+
+\DeclareOption{notes}{
+  \PassOptionsToClass{handout}{beamer}
+  \@notestrue
+}
+
+\DeclareOption{amberg}{
+  \@ambergtrue
+  \@weidenfalse
+  \@amwenfalse
+}
+
+\DeclareOption{weiden}{
+  \@ambergfalse
+  \@weidentrue
+  \@amwenfalse
+}
+
+\DeclareOption{amwen}{
+  \@ambergfalse
+  \@weidenfalse
+  \@amwentrue
+}
+
 \ProcessOptions\relax
 
-
 \LoadClass[xcolor=table, covered, hyperref={bookmarks}]{beamer}
+
+\if@notes
+\RequirePackage{pgfpages}
+\RequirePackage{handoutWithNotes}
+\fi
 
 \RequirePackage{lmodern}
 \RequirePackage[T1]{fontenc}
@@ -48,6 +96,12 @@
 
 \RequirePackage{tikz}
 \RequirePackage{hyperref}
+
+\RequirePackage{version}
+
+\RequirePackage{adjustbox}
+\RequirePackage{etoolbox}
+
 
 \newcommand*{\email}[1]{\def\insertemail{#1}}
 \email{}
@@ -86,14 +140,35 @@
 \definecolor{gruen3}{RGB}{205, 217, 196}
 \definecolor{gruen4}{RGB}{237, 240, 233}
 
-% Linken und rechten Rand setzen
-\setbeamersize{text margin left=15pt, text margin right=15pt}
+% Rand setzen
+\newlength{\beamerleftmargin}
+\newlength{\beamerrightmargin}
+\newlength{\beamertopmargin}
+\newlength{\beamerbotmargin}
+\setlength{\beamerleftmargin}{.5cm}
+\setlength{\beamerrightmargin}{\beamerleftmargin}
+\setlength{\beamertopmargin}{.3cm}
+\setlength{\beamerbotmargin}{.3cm}
+
+\setbeamersize{text margin left=\beamerleftmargin}
+\setbeamersize{text margin right=\beamerrightmargin}
+\setbeamersize{sidebar width left=0cm}
+\setbeamersize{sidebar width right=0cm}
+
+\newlength{\othruleheadlinetop}
+\newlength{\othruleheadlinebot}
+\newlength{\othrulefootline}
+\setlength{\othruleheadlinetop}{.4mm}
+\setlength{\othruleheadlinebot}{.4mm}
+\setlength{\othrulefootline}{.1mm}
+
 
 % Festlegung, welche Elemente in welchen Farben dargestellt werden sollen
-\setbeamercolor*{title}{fg=schwarz, bg=weiss}
+\setbeamercolor*{title}{fg=weiss, bg=weiss}
 \setbeamercolor*{frametitle}{fg=schwarz, bg=weiss}
 \setbeamercolor*{normal text}{fg=schwarz, bg=weiss}
 \setbeamercolor*{alerted text}{fg=orange1, bg=weiss}
+\setbeamercolor*{gray text}{fg=grau1, bg=weiss}
 \setbeamercolor*{footline}{fg=weiss, bg=grau1}
 \setbeamercolor*{structure}{fg=orange1}
 \setbeamercolor*{example text}{fg=gruen1, bg=weiss}
@@ -105,9 +180,15 @@
 \setbeamercolor*{block body alerted}{parent=normal text, use=block title, bg=rot4}
 \setbeamercolor*{block body example}{parent=normal text, use=block title, bg=gruen4}
 \setbeamercolor*{button}{fg=weiss, bg=orange1}
+\setbeamercolor{bibliography entry author}{fg=,bg=}
+\setbeamercolor{bibliography entry title}{fg=,bg=}
+\setbeamercolor{bibliography entry location}{fg=,bg=}
+\setbeamercolor{bibliography entry note}{fg=,bg=}
+
 % Festlegung der Schriftarten
 \setbeamerfont{tiny structure}{series=\mdseries, size=\tiny}
 \setbeamerfont{title}{series=\bfseries, size=\Large}
+\setbeamerfont{subtitle}{series=\mdseries, size=\large}
 \setbeamerfont*{author}{series=\mdseries, size=\normalsize}
 \setbeamerfont{frametitle}{series=\bfseries, size=\large}
 \setbeamerfont{framesubtitle}{series=\mdseries, size=\normalsize}
@@ -135,63 +216,82 @@
 \setlength\titlewidth{\paperwidth}
 \addtolength\titlewidth{-3.7cm}
 
-\pgfdeclareimage[width=4.53cm]{titel-logo}{images/titel-logo.png}
-\pgfdeclareimage[width=2.5cm]{folie-logo}{images/folie-logo.png}
+\pgfdeclareimage[width=2.5cm]{folie-logo}{logos/logo-oth-aw-text-seite.png}
 
 \defbeamertemplate*{title page}{OTHAW}{%
-  \begin{tikzpicture}[remember picture,overlay]
-  \node[anchor=north east, inner sep=0,outer sep=0]   at (current page.north east){%
-  \pgfuseimage{titel-logo}};
-\end{tikzpicture}
+%  \begin{tikzpicture}[remember picture,overlay]
+%  \node[anchor=north east, inner sep=0,outer sep=0, xshift=-.5cm, yshift=-.3cm]   at (current page.north east){%
+%  \pgfuseimage{titel-logo}};
+%\end{tikzpicture}
 
-  \par\vfill
-  {\usebeamerfont{title}\usebeamercolor[fg]{title}\inserttitle}
+    \begin{tikzpicture}[remember picture,overlay]
+      \node[above right,inner sep=0pt,outer sep=0pt] at (current page.south west) {
+      \if@amberg
+        \includegraphics[width=\paperwidth, height=\paperheight]{images/amberg-titel.png}
+      \else
+      \if@weiden
+        \includegraphics[width=\paperwidth, height=\paperheight]{images/weiden-titel.png}
+      \else
+      \if@amwen
+        \includegraphics[width=\paperwidth, height=\paperheight]{images/amwen-titel.png}
+      \fi
+      \fi
+      \fi
+      };
+    \end{tikzpicture}
+
+  \vskip5cm
+  \usebeamercolor[fg]{title}
+  {\usebeamerfont{title}\inserttitle}
   \ifx\insertsubtitle\@empty\else\vskip0.25em%
     {\usebeamerfont{subtitle}\insertsubtitle\par}%
-  \fi\par\vfill
-  \begin{beamercolorbox}[sep=0pt]{author}
-    {\usebeamerfont{author}\insertauthor}
-    \ifx\insertinstitute\empty\else{\\\usebeamerfont{institute}\insertinstitute}\fi
-    \ifx\insertemail\empty\else{\\\usebeamerfont{institute}\href{mailto:\insertemail}{\usebeamerfont{institute}\texttt{<\insertemail>}}}\fi
-    \\[2em]
-    \mbox{}{\insertplace, \insertdate}\\[1em]
-    \mbox{}{\inserttitlegraphic}
+  \fi
+  \vskip-.2cm%
+  \color{orange2}\rule{0.5cm}{\othruleheadlinetop}%
+  \vskip.2cm%
+  \begin{beamercolorbox}[sep=0pt]{author}%
+    \usebeamerfont{institute}%
+    \insertdate\\[.1cm]
+    \insertauthor\ | \insertplace
+    %\ifx\insertinstitute\empty\else{\\\usebeamerfont{institute}\insertinstitute}\fi
+    %\ifx\insertemail\empty\else{\\\usebeamerfont{institute}\href{mailto:\insertemail}{\usebeamerfont{institute}\texttt{<\insertemail>}}}\fi
+    %\\[2em]
+    %\mbox{}{\insertplace, \insertdate}\\[1em]
+    %\mbox{}{\inserttitlegraphic}
 
   \end{beamercolorbox}
 }
 
 \defbeamertemplate*{footline}{OTHAW}{%
-  \begin{beamercolorbox}[center,leftskip=15pt, rightskip=15pt, wd=\paperwidth, ht=0.54cm]{footline}
-    \vspace{1.5ex}
-    \tabular{@{}m{0.3\textwidth}m{0.3\textwidth}m{0.3\textwidth}@{}}
-      \parbox{0.3\textwidth}{\raggedright
-\usebeamerfont{footline}\insertshorttitle} &
-\parbox{0.3\textwidth}{%
-\usebeamerfont{footline}\hfill\if@lecture\else\insertshortauthor\fi\hfill\mbox{}}
-&
-\parbox{0.3\textwidth}{\raggedleft\usebeamerfont{footline}\insertframenumber
-\hspace{.4cm}\mbox{}}
-    \endtabular
-  \end{beamercolorbox}
+  \ifnum\value{framenumber}=1% check if it's the title frame
+  % do nothing
+  \else%
+    \hskip\beamerleftmargin%
+    \fcolorbox{white}{white}{
+    \begin{adjustbox}{minipage=\dimexpr\textwidth-\beamerrightmargin-\beamerleftmargin, margin=0pt 0pt}
+        \color{grau1}\rule{\dimexpr\textwidth-\beamerrightmargin}{\othrulefootline}%\par%
+        \vskip.1cm%
+        \parbox{\dimexpr\textwidth-\beamerrightmargin}{%
+            \color{grau1}\usebeamerfont{footline}\inserttitle\if@lecture: \insertsubtitle\fi\  | \insertauthor \hfill \insertdate \hspace{0.7cm} \insertframenumber\\[-.15cm]
+        }
+    \end{adjustbox}}%
+  \fi
 }
 
-\defbeamertemplate*{footline}{title slide}{%
-  \begin{beamercolorbox}[center,leftskip=15pt, rightskip=15pt, wd=\paperwidth, ht=0.54cm]{footline}
-  \end{beamercolorbox}
-}
+%\defbeamertemplate*{footline}{title slide}{%
+%}
 
 
 \defbeamertemplate*{headline}{OTHAW}
 {%
 \begin{tikzpicture}[remember picture,overlay]
-\node[anchor=north east, inner sep=0,outer
-sep=0]   at (current page.north east){%
+\node[anchor=north east, inner sep=0,outer sep=0, xshift=-\beamerrightmargin, yshift=-\beamertopmargin]   at (current page.north east){%
 \pgfuseimage{folie-logo}};
 \end{tikzpicture}
 }
 
 \defbeamertemplate*{frametitle}{OTHAW}{%
-  \vskip.2cm
+  \vskip\beamertopmargin
   \if@tochead%
   \vbox{%
     \tinyline{\hspace{.2cm}\insertsection\hfill}%
@@ -202,9 +302,25 @@ sep=0]   at (current page.north east){%
   }
   \vskip.3cm
   \fi
-  \parbox[b]{\titlewidth}{%
-    \usebeamerfont*{frametitle}\usebeamercolor{frametitle}\insertframetitle\newline
-    \usebeamerfont*{framesubtitle}\insertframesubtitle}%
+  %
+  \ifx\insertframesubtitle\empty%
+    \ifstrempty{\insertframetitle}{%
+    % Draw noting
+    }{
+    \parbox[b][0.3cm]{\titlewidth}{%
+      \usebeamerfont*{frametitle}\usebeamercolor{frametitle}\insertframetitle
+      \mbox{}\\[-.25cm]
+      \color{orange1}\rule{0.5cm}{\othruleheadlinetop}%
+    }
+  }
+  \else
+  \parbox[b][0.8cm]{\titlewidth}{%
+    \usebeamerfont*{frametitle}\usebeamercolor{frametitle}\insertframetitle
+    \newline\usebeamerfont*{framesubtitle}\insertframesubtitle%
+  }
+  \mbox{}\\[-.25cm]
+  \color{orange1}\rule{0.5cm}{\othruleheadlinetop}%
+  \fi
 }
 
 \setbeamertemplate{footline}[title slide]
@@ -214,5 +330,4 @@ sep=0]   at (current page.north east){%
   \setbeamertemplate{frametitle}[OTHAW]%
   \setbeamertemplate{footline}[OTHAW]
 }
-
 
