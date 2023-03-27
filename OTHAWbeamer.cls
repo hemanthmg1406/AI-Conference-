@@ -331,3 +331,10 @@
   \setbeamertemplate{footline}[OTHAW]
 }
 
+\newenvironment{erlaeuterung}{%
+\addtocounter{framenumber}{-1}
+\begin{frame}
+\frametitle{Erläuterungen}
+}{ \end{frame}}
+
+\if@showerlaeuterung \else \excludeversion{erlaeuterung}\fi
