@@ -17,10 +17,10 @@
 #
 # otherwise inkscape's pdf conversion will be applied to the given svg
 
-
 import lxml.etree
 import sys
 import os
+import subprocess
 import re
 
 
@@ -38,7 +38,7 @@ def main():
         OUTDIR = sys.argv[1]
         
     else:
-        print "Usage: %s [OUTPUT DIRECTORY] SVGFILE" % sys.argv[0]
+        print("Usage: %s [OUTPUT DIRECTORY] SVGFILE" % sys.argv[0])
         sys.exit(1)
     
     DIRNAME, FILENAME = os.path.split(PATH)
@@ -46,7 +46,7 @@ def main():
     
     # Take the Wireframes.svg
     f = open(PATH)
-    cnt = f.read()
+    cnt = f.read().encode('utf-8')
     f.close()
 
     doc = lxml.etree.fromstring(cnt)
@@ -60,7 +60,24 @@ def main():
     if not content_layer:
         svgslide="%s/%s.svg" % (DIRNAME,BASENAME)
         pdfslide="%s/%s.pdf" % (OUTDIR,BASENAME)
-        os.system("inkscape %s --export-pdf=%s" % (svgslide, pdfslide))
+
+        output = str(subprocess.check_output("inkscape1.3 --version", shell=True, stderr=open(os.devnull, 'w')))
+
+        if "Inkscape 0." in output:
+            print("Inkscape Version = 0.*")
+            version = 0
+        else:
+            print("Inkscape Version = 1.*")
+            version = 1
+
+        if version == 0:
+            # for inscape 0.*
+            os.system("inkscape -d 90 -C -A %s %s" % (pdfslide, svgslide))
+        else:
+            # for inkscape 1.x
+            os.system("inkscape -d 90 -C --export-type=pdf --export-filename=%s %s" % (pdfslide, svgslide))
+
+        # os.system("inkscape %s --export-pdf=%s" % (svgslide, pdfslide))
         sys.exit(0)
 
     content = content_layer[0]
@@ -71,8 +88,8 @@ def main():
 
 
     if not bool(preslides):
-        print "Make sure you have a text box (with no flowRect) in the " \
-            "'content' layer, and rerun this program."
+        print("Make sure you have a text box (with no flowRect) in the " \
+              "'content' layer, and rerun this program.")
         sys.exit(1)
 
 
@@ -106,7 +123,7 @@ def main():
                 prefix = sl[0]
                 sl = sl[1]
             else:
-                print "Too many prefix separators ':'"
+                print("Too many prefix separators ':'")
                 sys.exit(1)
 
             for layer in sl.split(','):
@@ -155,16 +172,30 @@ def main():
                                                 "%s.pdf" % filename))
         # Write the XML to file, "wireframes.p1.svg"
         f = open(svgslide, 'w')
-        f.write(lxml.etree.tostring(doc))
+        f.write(lxml.etree.tostring(doc,encoding='unicode'))
         f.close()
 
         # Run inkscape -A wireframes.p1.pdf wireframes.p1.svg
-        os.system("inkscape -d 90 -C -A %s %s" % (pdfslide, svgslide))
+        # First, check version
+        output = str(subprocess.check_output("inkscape --version", shell=True, stderr=open(os.devnull, 'w')))
+
+        if output.startswith('Inkscape 0'):
+            version = 0
+        else:
+            version = 1
+
+        if version == 0:
+            # for inscape 0.*
+            os.system("inkscape -d 90 -C -A %s %s" % (pdfslide, svgslide))
+        else:
+            # for inkscape 1.x
+            os.system("inkscape -d 90 -C --export-type=pdf --export-filename=%s %s" % (pdfslide, svgslide))
+
         os.unlink(svgslide)
         pdfslides.append(pdfslide)
 
-        print "Generated page %d." % (i+1)
+        print("Generated page %d." % (i+1))
 
 if __name__ == "__main__":
     main()
-    
+
