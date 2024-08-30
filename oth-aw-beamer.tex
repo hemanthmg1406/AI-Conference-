@@ -1,85 +1,316 @@
-\documentclass[aspectratio=169, lecture, amberg]{OTHAWbeamer}
-\let\Tiny=\tiny  % remove annoying warning 2
-% other formats possible, e.g. aspectratio=43 or aspectration=169
-% lecture argument adds the subtitle to the footline
-% instead of amberg, the option weiden oder amwen can be given. This changes the title backround
+\documentclass[lecture, orange, autotoc, toc=fancy, indicatelastpageofframe, footlinebox]{OTHAWbeamer}
+% OTHAWbeamer supports the following arguments
+% + aspectratio=X           Sets aspect ratio of presentation [default: aspectratio=169]
+% + lecture                 Adds subtitle to footer
+% + amberg                  Title page with Amberg campus
+% + weiden                  Title page with Weiden campus
+% + amwen                   Title page with both campuses
+% + white                   Title page with no picture [default]
+% + orange                  Title page with orange bar
+% + titleshapes             Show shapes on title page [default]
+% + notitleshapes           No shapes on title page
+% + thankyoushapes          Show shapes on thank you page [default]
+% + nothankyoushapes        No shapes on thank you page
+% + breakshapes             Show shapes on break page [default]
+% + nobreakshapes           No shapes on break page
+% + shapes                  Shortcut for titleshapes, thankyoushapes, breakshapes
+% + noshapes                Shortcut for notitleshapes, nothankyoushapes, nobreakshapes
+% + annotate                Show annotation/erlaeuterung environments
+% + indicatelastpageofframe Colorizes frame counter on the last page of each frame (useful for presentations with many animations)
+% + autotoc                 Automatic table of contents at start of new sections
+% + noautotoc               Disable automatic table of contents at start of new sections [default]
+% + toc=normal              Single-column Corporate Design table of contents [default]
+% + toc=twocolumn           Two-column Corporate Design table of contents (use when there are five or more sections)
+% + toc=fancy               Fancier table of contents with support for subsections
+% + toc=legacy              Disable all new table of content features and use the previous style
+% + squeezetoc              Change beamer internals to make all table of contents more compact (use when there are five or more sections per column)
+% + nosqueezetoc            Do not try to make table of contents more compact [default]
+% + nometaot                Disable MetaOT corporate design font (required if you have no access to TTF files or using pdf(La)TeX)
+% + ignoremetaot            Disables error messages regarding MetaOT font
+% + notes                   Generate handouts
+% + notes=withautotoc       Generate handouts with automatic table of contents
+% + notes=withsquaredgrid   Generate A4-handouts with squared grids below each frame
+% + footlinebox             Add a colored box behind the footline text
 
-\usepackage{ngerman}
+\AtBeginDocument{%
+    \selectlanguage{english} % ngerman, english
+}
 
-\usepackage[utf8]{inputenc}
-%\usepackage{tikz}
-\usepackage{etex}
-
-\title[Kurztitel]{Total toller Titel}
-\subtitle{Untertitel}
-\author[Mustermann]{Erika Mustermann}
-\place{OTH Amberg-Weiden}
+\title{OTHAWbeamer}
+\subtitle{The \LaTeX-beamer template of OTH Amberg-Weiden}
+\author{Erika Mustermann}
+\place{Amberg}
 \date{\today}
-%\institute{Fakultät XXX}
+%\faculty{EMI} % optional
+\copyrightby{OTH Amberg-Weiden} % optional
 
+% contact information; everything is optional and shown on contactframe and thankyouframe
 \email{e.mustermann@oth-aw.de}
-%\authortwo{Max Mustermann}% optional
-%\emailtwo{max\_mustermann@genua.de}
+\institution{Ostbayerische Technische Hochschule (OTH) Amberg-Weiden}
+\address{Kaiser-Wilhelm-Ring 23 | 92224 Amberg}
+\telephone{+49 (9621) 482-0}
+\fax{+49 (9621) 482-1}
+
+% more contact information; everything is optional and shown on contactframe
+\photo{images/erikamustermann.png}
+\position{Head of Faculty}
+
 
 \begin{document}
 \maketitle
 
-\frame{
-\frametitle{Inhalt}
+\inserttoc
 
-\tableofcontents
+\section{Options}
+\subsection{Title Page}
+
+\begin{frame}
+    \frametitle{Title Page}
+    \framesubtitle{Options}
+
+    All options must be set when loading \texttt{OTHAWbeamer}, e.g.,\newline\hspace*{5mm}\texttt{\textbackslash{}documentclass[amwen]\{OTHAWbeamer\}}
+
+    \vspace*{5mm}
+    \setlength{\leftmargini}{1.75cm}
+    \begin{itemize}
+        \item[\texttt{amberg}] Title page with picture of the Amberg campus
+        \item[\texttt{weiden}] Title page with picture of the Weiden campus
+        \item[\texttt{amwen}] Title page with picture of both campuses
+        \item[\texttt{white}] Title page with no picture\footnote{This is the default option if no (other) option is specified}
+        \item[\texttt{orange}] Title page with orange bar
+    \end{itemize}
+\end{frame}
+
+\subsection{Shapes}
+\begin{frame}
+    \frametitle{Shapes}
+    \framesubtitle{Options}
+
+    The new corporate design template employs several abstract shapes.\\
+    They are enabled by default, but can be disabled at wish.
+
+    \vspace*{5mm}
+    \setlength{\leftmargini}{3.75cm}
+    \begin{itemize}
+        \item[\texttt{(no)titleshapes}] (Disable) Shapes on title page
+        \item[\texttt{(no)thankyoushapes}] (Disable) Shapes on thank you page
+        \item[\texttt{(no)breakshapes}] (Disable) Shapes on break page
+        \item[\texttt{(no)shapes}] (Disable) Shapes altogether (shorthand for options mentioned above)
+    \end{itemize}
+\end{frame}
+
+\subsection{Table of Contents}
+\begin{frame}
+    \frametitle{Table of Contents (TOCs)}
+    \framesubtitle{Newly Added Options}
+    \setlength{\leftmargini}{3.25cm}
+    \begin{itemize}
+        \item[\texttt{autotoc}] Automatic TOC generation at start of new sections
+        \item[\texttt{noautotoc}] Disable this feature (default)
+    \end{itemize}
+    \begin{center}
+        Use macro \texttt{\textbackslash{}inserttoc} outside a \texttt{frame} environment to insert a TOC.\\
+        The style of the TOC can be varied using the following options:
+        \vspace*{-4mm}
+    \end{center}\pause%
+    \begin{itemize}
+        \item[\texttt{toc=normal}] Single-column corporate design TOC (default)
+        \item[\texttt{toc=twocolumn}] Two-column corporate design TOC
+        \item[\texttt{toc=fancy}] Single-column, fancy TOC with support for subsections\footnotemark
+        \item[\texttt{toc=legacy}] Disable all new TOC features and use the previous style
+    \end{itemize}
+    \pause
+    \begin{itemize}
+        \item[\texttt{(no)squeezetoc}] (Disable) Whitespace removal and font size adjustment to fit more elements in TOC (use when there are five or more entries per column)
+    \end{itemize}
+    \footnotetext<2->{See this presentation for reference}
+\end{frame}
+
+\subsection{Font: MetaOT}
+\begin{frame}
+    \frametitle{Font: MetaOT}
+    OTH Amberg-Weiden corporate design uses \textit{MetaOT} as main font.\\
+    However, there are two problems:
+    \begin{enumerate}
+        \item it is not free (as in: there is a licensing fee)
+        \item it is only available in \texttt{TTF} format
+    \end{enumerate}\pause
+
+    The ``solution'' is two-fold:
+    \setlength{\leftmargini}{2cm}
+    \begin{itemize}
+        \item[Students] No access to \textit{MetaOT}\\$\rightarrow$ specify option \texttt{nometaot} when using the \texttt{OTHAWbeamer} class
+        \item[Staff] Access to \textit{MetaOT}'s \texttt{TTF} files\\$\rightarrow$ Compiling with \alert{pdf(La)TeX}: specify option \texttt{nometaot}\\$\rightarrow$ Compiling with \alert{Lua(La)TeX} or \alert{Xe(La)TeX}: \textit{MetaOT} is used by default
+    \end{itemize}\pause
+
+    Option \texttt{ignoremetaot} disables all error messages regarding \textit{MetaOT} font and will print warnings instead.
+\end{frame}
+
+\subsection{Miscellaneous Options}
+\begin{frame}
+    \frametitle{Miscellaneous Options}
+    \framesubtitle{Changes and Descriptions}
+    \setlength{\leftmargini}{4.75cm}
+    \begin{itemize}
+        \item[\texttt{aspectratio=XYZ}] Default changed to 169; can still be overridden\pause
+        \item[\texttt{lecture}] When given, displays the subtitle in footer
+        \item[\texttt{annotate}] When given, frames in \texttt{annotation} or \texttt{erlaeuterung} environments are written to output PDF, otherwise omitted\pause
+        \item[\texttt{indicatelastpageofframe}] Colorizes the frame counter on the last page of each frame.\\This is helpful when using frames with many animation steps.\footnotemark
+    \end{itemize}
+    \footnotetext<3>{See this frame for reference; only when all contents are displayed, the frame counter turns orange}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Miscellaneous Options}
+    \framesubtitle{Included and Extended for Compatibility}
+    \setlength{\leftmargini}{4.5cm}
+    \begin{itemize}
+        \item[\texttt{tochead}] Displays a (small) table of contents above a frame's title
+        \item[\texttt{notochead}] Disables \texttt{tochead} (default)
+        \item[\texttt{notes}] Generates handouts and disables all animations;\\also disables \texttt{indicatelastpageofframe};\\does not show automatically generated table of contents
+        \item[\texttt{notes=withautotoc}] Same as \texttt{notes}, but show automatically generated TOCs
+        \item[\texttt{notes=withsquaredgrid}] Same as \texttt{notes}, but generate A4 pages with squared grid lines for personal notes
+        \item[\texttt{footlinebox}] Activates a colored box behind the footline
+        \item[\texttt{nofootlinebox}] Disables a colored box behind the footline, i.e. making it transparent (default)
+    \end{itemize}
+\end{frame}
+
+\section{Usage}
+
+\subsection{Background Image and White Logo}
+
+% starts a new TeX group to make changes to logo color and background image only locally
+{
+    \logowhite
+    \setbeamertemplate{background}{%
+        \begin{tikzpicture}
+            \node at (current page.center) [outer sep=0pt, inner sep=0pt] {\includegraphics[height=\paperheight]{images/weiden-orig.png}};
+        \end{tikzpicture}%
+    }
+    \setbeamercolor{footline}{fg=weiss, bg=grau2}
+    \begin{frame}{\color{weiss}Frame title can be white, too}
+        \begin{block}{}
+            Macro \texttt{\textbackslash logowhite} changes the OTH-AW logo to white \textit{for all following slides}.\par
+            Use \texttt{\textbackslash logocolor} to switch back to the colored version of the OTH-AW logo.\\
+            Alternatively, use a \TeX{} group to apply changes only locally (see code).
+        \end{block}
+        \vspace{5mm}
+        \centering\pgfsetfillopacity{0.5}\colorbox{schwarz}{\parbox{0.75\textwidth}{\pgfsetfillopacity{1}\centering\color{weiss}\bfseries However, using a background image is generally not advised\\as text legibility is significantly worse!}}\par
+        \vspace{2mm}
+        \centering\pgfsetfillopacity{0.5}\colorbox{schwarz}{\parbox{0.75\textwidth}{\pgfsetfillopacity{1}\centering\color{weiss}Changing the color of the footline is also possible (see code).}}
+    \end{frame}
 }
+% end the TeX group, i.e., restore all previous settings for logo color and background image
 
-\section{Section Foogoo}
 
+\subsection{Annotations}
+\begin{annotation}
+    \begin{itemize}
+        \item Annotations to the last slide
+        \item Two environment names available: \texttt{annotation} and \texttt{erlaeuterung}
+        \item Can be enabled using option \texttt{annotate}
+        \item Frame counter does not increase
+    \end{itemize}
+\end{annotation}
+
+\begin{erlaeuterung}
+    You can have multiple annotation slides chained together.
+\end{erlaeuterung}
+
+\subsection{Empty Frame Titles}
 \begin{frame}
-\frametitle{Test}
-
-\begin{itemize}
-\item<1-> Item 1
-\item<2-> Item 2
-\begin{itemize}
-\item Bla
-\item Blub
-\end{itemize}
-\end{itemize}
-\end{frame}
-
-\subsection{Subsection Bar1}
-\begin{frame}
-\frametitle{Test}
-
-\begin{enumerate}
-\item Enum 1
-\pause
-\item Enum 2
-\end{enumerate}
-\end{frame}
-
-\subsection{Subsection Bar2}
-\begin{frame}
-\frametitle{Toast}
-
-\begin{block}{Block}
-Inhalt Block.
-\end{block}
-\end{frame}
-
-\section{Section Bar}
-\begin{frame}
-\frametitle{Frametitle}
-\framesubtitle{Frame subtitle}
-
-\begin{center}
-Befülle mich!
-\end{center}
+    \begin{center}
+        If the \textit{frametitle} is empty, no title and\\
+        no orange line are displayed in the top left corner.\\[1cm]
+        Use this for large diagrams.
+    \end{center}
 \end{frame}
 
 \begin{frame}
-\frametitle{Das Ende.}
-\begin{center}
-\scalebox{2}{Weitere Fragen?}
-\end{center}
+    \frametitle{{}}
+    \begin{center}
+        However, if you specify \texttt{\textbackslash{}frametitle\{\{\}\}},\\
+        the title not displayed but it affects layout\footnote[3]{The next slide has a title, but notice how the layout is not affected}.\\[1cm]
+        Use this when your diagram obstructs the OTH logo.
+    \end{center}
 \end{frame}
+
+\begin{frame}
+    \frametitle{Now with text}
+    \framesubtitle{And even more text}
+    \begin{center}
+        However, if you specify \texttt{\textbackslash{}frametitle\{\{\}\}},\\
+        the title not displayed but it affects layout\footnote[3]{\hspace*{\widthof{The next}-\widthof{This}}This slide has a title, but notice how the layout is not affected}.\\[1cm]
+        Use this when your diagram obstructs the OTH logo.
+    \end{center}
+\end{frame}
+
+
+\section{Demo Pages}
+\subsection{Demo Page \#1}
+
+\begin{frame}
+    \frametitle{Frametitle}
+    \framesubtitle{Frame subtitle}
+
+    \begin{center}
+        You can safely delete all frames before using this template
+    \end{center}
+\end{frame}
+
+\subsection{Demo Page \#2}
+\begin{frame}
+    \frametitle{Important Stuff}
+    \framesubtitle{Always use a subtitle to make things look beautiful}
+
+    \begin{block}{Title of this block}
+        Very important content: $E = mc^2$ \qed
+    \end{block}
+\end{frame}
+
+\subsection{Break Pages (Newly Added Stuff)}
+
+\begin{breakframe}
+    This is a break frame\\\normalsize\mdseries Use it to plan breaks during your presentation
+\end{breakframe}
+
+\subsection{Colors}
+\usetikzlibrary{math}
+\begin{frame}{OTH Corporate Design Color Scheme}
+    \centering
+    \begin{tikzpicture}[inner sep=0pt]
+        \tikzmath{\w=2.5;\h=1.6;}%
+        \foreach \s/\tc [count=\y] in {1/white,2/white,3/black,4/black}{
+            \foreach \c [count=\x] in {orange, blau, cyan, gruen, lila, grau}{
+                \node (\c-\s) at (\x*\w cm, -\y*\h cm) [rectangle, fill=\c\s, inner sep=0pt, outer sep=0pt, minimum width=\w cm - 1mm, minimum height=\h cm - 1mm] {};
+                \node at (\c-\s) [color=\tc,text width=\w cm, align=center] {\c\s\\\convertcolorspec{named}{\c\s}{RGB}\tmp\tmp\\\convertcolorspec{named}{\c\s}{HTML}\tmp\#\tmp};
+            }
+        }
+    \end{tikzpicture}%
+\end{frame}
+
+\subsection{Warnings}
+\begin{frame}
+    \frametitle{This is a very, very long title to demonstrate what can go wrong whilst making a plea to the user}
+    \begin{center}
+        Don't do that
+    \end{center}
+\end{frame}
+
+
+\begin{frame}
+    \frametitle{The End}
+    \begin{center}
+        \scalebox{2}{Any questions left?}\\[1cm]
+        There are multiple ways to end your presentation\\[2mm]\onslide<2->{Choose one}
+    \end{center}
+\end{frame}
+
+\begin{contactframe}
+\end{contactframe}
+
+\begin{thankyouframe}
+\end{thankyouframe}
+
 \end{document}
 

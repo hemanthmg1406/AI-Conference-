@@ -1,10 +1,23 @@
 % Vorlage für LaTeX-Beamer nach dem Corporate Design der OTH Amberg-Weiden
-% Autoren: Andreas Aßmuth, Matthias Söllner, Daniel Loebenberger
-% Aktuelle Version: v0.04
-% Stand: 27.03.2023
+% Autoren: Andreas Aßmuth, Matthias Söllner, Daniel Loebenberger, Sophie Spies, Tobias Bauer
+% Aktuelle Version: v0.05
+% Stand: 31.08.2024
 %
 % Changelog:
-%
+% v0.05: Umsetzung des neuen Corporate Designs (31.08.2024)
+%        + Titelfolien: Optionen amberg, weiden, amwen, white
+%        + Break-Seite: Umgebung breakframe
+%        + Abschluss-Seite: Umgebungen contactframe, thankyouframe
+%        + Inhaltsverzeichnis an PowerPoint-Vorlage angepasst und erweitert
+%        + Handout-Modus mit Karopapier für Notizen
+%        + MetaOT als Standardschriftart (deaktivierbar für Studierende)
+%        + Farbauswahlanpassung an CD, rot[1-4] entfernt, blau[1-4] angepasst, cyan[1-4] hinzugefügt
+%        + OTH-Logo in Ecke oben rechts zweifarbig: \logowhite \logocolor
+%        + Quality of Life
+%           + Bildformat 16:9 nun standardmäßig gesetzt
+%           + Fußzeile springt nicht mehr bei Änderung der Anzahl der Stellen der Seitenangabe
+%           + Option indicatelastpageofframe färbt Seitenangabe ein, wenn es sich um die letzte Seite eines Frames handelt
+%           + Automatische Inhaltsverzeichnisse bei Abschnittbeginn
 % v0.04: Neues Corporate Design umgesetzt (27.03.2023)
 % v0.03: Überarbeitung Titelfolie, Ausrichtung Information Fußzeile,
 %        Positionierung Logos, Optionen lecture, tochead (09.01.2019)
@@ -14,7 +27,7 @@
 % v0.01: Erstellung der Klassendatei (20.11.2013)
 %
 
-\ProvidesClass{OTHAWbeamer}[2023/03/27 v0.04 Vorlage Ostbayerische Technische Hochschule Amberg-Weiden]
+\ProvidesClass{OTHAWbeamer}[2024/08/31 v0.05 Vorlage Ostbayerische Technische Hochschule Amberg-Weiden]
 %
 \PassOptionsToPackage{english,greek,ngerman}{babel}
 \DeclareOption*{\PassOptionsToClass{\CurrentOption}{beamer}}
@@ -25,11 +38,16 @@
 \newif\if@tochead
 \@tocheadfalse
 
+\newif\if@footlinebox
+\@footlineboxfalse
+
 \newif\if@showerlaeuterung
 \@showerlaeuterungfalse
 
 \newif\if@notes
 \@notesfalse
+\newif\if@noteswithsquaredgrid
+\@noteswithsquaredgridfalse
 
 \newif\if@amberg
 \@ambergfalse
@@ -38,56 +56,208 @@
 \@ambergfalse
 
 \newif\if@amwen
-\@amwentrue
+\@amwenfalse
 
+\newif\if@minimal
+\@minimaltrue
+
+\newif\if@orangetitle
+\@orangetitlefalse
+
+\newif\if@titleshapes
+\@titleshapestrue
+
+\newif\if@thankyoushapes
+\@thankyoushapestrue
+
+\newif\if@breakshapes
+\@breakshapestrue
+
+\newif\if@indicatelastpageofframe
+\@indicatelastpageofframefalse
+
+\newif\if@autotoc
+\@autotocfalse
+\newif\if@autotocshowonhandout
+\@autotocshowonhandoutfalse
+
+\newif\if@fancytoc
+\@fancytocfalse
+
+\newif\if@twocolumntoc
+\@twocolumntocfalse
+
+\newif\if@legacytoc
+\@legacytocfalse
+
+\newif\if@squeezetoc
+\@squeezetocfalse
+
+\newif\if@usefontmetaot
+\@usefontmetaottrue
+\newif\if@ignoremetaot
+\@ignoremetaotfalse
 
 \DeclareOption{tochead}{%
-    \@tocheadtrue
+  \@tocheadtrue
+}
+\DeclareOption{notochead}{
+  \@tocheadfalse
+}
+
+\DeclareOption{footlinebox}{
+  \@footlineboxtrue
+}
+\DeclareOption{nofootlinebox}{
+  \@footlineboxfalse
 }
 
 \DeclareOption{lecture}{%
-    \@lecturetrue
-}
-
-\DeclareOption{notochead}{
-  \@tocheadfalse
+  \@lecturetrue
 }
 
 \DeclareOption{annotate}{
   \@showerlaeuterungtrue
 }
 
-\DeclareOption{notes}{
-  \PassOptionsToClass{handout}{beamer}
-  \@notestrue
-}
-
 \DeclareOption{amberg}{
   \@ambergtrue
   \@weidenfalse
   \@amwenfalse
+  \@minimalfalse
+  \@orangetitlefalse
 }
 
 \DeclareOption{weiden}{
   \@ambergfalse
   \@weidentrue
   \@amwenfalse
+  \@minimalfalse
+  \@orangetitlefalse
 }
 
 \DeclareOption{amwen}{
   \@ambergfalse
   \@weidenfalse
   \@amwentrue
+  \@minimalfalse
+  \@orangetitlefalse
 }
 
+\DeclareOption{white}{
+  \@ambergfalse
+  \@weidenfalse
+  \@amwenfalse
+  \@minimaltrue
+  \@orangetitlefalse
+}
+
+\DeclareOption{orange}{
+  \@ambergfalse
+  \@weidenfalse
+  \@amwenfalse
+  \@minimaltrue
+  \@orangetitletrue
+}
+
+\DeclareOption{titleshapes}{
+  \@titleshapestrue
+}
+\DeclareOption{notitleshapes}{
+  \@titleshapesfalse
+}
+\DeclareOption{thankyoushapes}{
+  \@thankyoushapestrue
+}
+\DeclareOption{nothankyoushapes}{
+  \@thankyoushapesfalse
+}
+\DeclareOption{breakshapes}{
+  \@breakshapestrue
+}
+\DeclareOption{nobreakshapes}{
+  \@breakshapesfalse
+}
+\DeclareOption{shapes}{
+  \@titleshapestrue
+  \@thankyoushapestrue
+  \@breakshapestrue
+}
+\DeclareOption{noshapes}{
+  \@titleshapesfalse
+  \@thankyoushapesfalse
+  \@breakshapesfalse
+}
+
+\DeclareOption{indicatelastpageofframe}{
+  \@indicatelastpageofframetrue
+}
+
+\DeclareOption{notes}{
+  \PassOptionsToClass{handout}{beamer}
+  \@notestrue
+  \@indicatelastpageofframefalse
+}
+\DeclareOption{notes=withautotoc}{
+  \PassOptionsToClass{handout}{beamer}
+  \@notestrue
+  \@indicatelastpageofframefalse
+  \@autotoctrue
+  \@autotocshowonhandouttrue
+}
+\DeclareOption{notes=withsquaredgrid}{
+  \PassOptionsToClass{handout}{beamer}
+  \@notestrue
+  \@indicatelastpageofframefalse
+  \@noteswithsquaredgridtrue
+}
+
+\DeclareOption{autotoc}{
+  \@autotoctrue
+}
+\DeclareOption{noautotoc}{
+  \@autotocfalse
+}
+\DeclareOption{squeezetoc}{
+  \@squeezetoctrue
+}
+\DeclareOption{nosqueezetoc}{
+  \@squeezetocfalse
+}
+\DeclareOption{toc=legacy}{
+  \@legacytoctrue
+  \@fancytocfalse
+  \@squeezetocfalse
+}
+\DeclareOption{toc=normal}{
+  \@fancytocfalse
+  \@twocolumntocfalse
+  \@legacytocfalse
+}
+\DeclareOption{toc=fancy}{
+  \@fancytoctrue
+  \@twocolumntocfalse
+  \@legacytocfalse
+}
+\DeclareOption{toc=twocolumn}{
+  \@fancytocfalse
+  \@twocolumntoctrue
+  \@legacytocfalse
+}
+
+\DeclareOption{nometaot}{
+  \@usefontmetaotfalse
+  \@ignoremetaotfalse
+}
+\DeclareOption{ignoremetaot}{
+  \@ignoremetaottrue
+}
+
+% Bildformat 16:9 standardmäßig setzen; Kann weiterhin bei Verwendung der Klasse überschrieben werden
+\PassOptionsToClass{aspectratio=169}{beamer}
+
 \ProcessOptions\relax
-
 \LoadClass[xcolor=table, covered, hyperref={bookmarks}]{beamer}
-
-\if@notes
-\RequirePackage{pgfpages}
-\RequirePackage{handoutWithNotes}
-\fi
 
 \RequirePackage{lmodern}
 \RequirePackage[T1]{fontenc}
@@ -95,52 +265,341 @@
 \RequirePackage{graphicx}
 
 \RequirePackage{tikz}
+\usetikzlibrary{calc,positioning}
 \RequirePackage{hyperref}
 
 \RequirePackage{version}
 
 \RequirePackage{adjustbox}
-\RequirePackage{etoolbox}
+\RequirePackage{calc}
+
+\RequirePackage{iftex}
+
+\def\throwerror@metaot#1{
+  \ifnum#1=0
+    \def\othawbeamer@errormessage@metaot{Font 'MetaOT' cannot be used with current (La)TeX engine. Switch to LuaLaTeX or XeLaTeX to enable support for TTF fonts or disable 'MetaOT' using option 'nometaot'}
+  \else
+    \def\othawbeamer@errormessage@metaot{Font 'MetaOT' was not found. Try installing it again or disable 'MetaOT' using option 'nometaot'}
+  \fi
+  \AtBeginDocument{
+    \if@ignoremetaot
+      \ClassWarning{OTHAWbeamer}{\othawbeamer@errormessage@metaot}
+    \else
+      \ClassError{OTHAWbeamer}{\othawbeamer@errormessage@metaot. In order to ignore this error message specify option 'ignoremetaot'}{}
+    \fi
+  }
+}
+
+\if@usefontmetaot
+  \def\canusefont@metaot{0}
+  \ifluatex
+    \def\canusefont@metaot{1}
+  \fi
+  \ifxetex
+    \def\canusefont@metaot{1}
+  \fi
+  \ifnum\canusefont@metaot=1
+    \RequirePackage{fontspec}
+    \IfFontExistsTF{MetaOT}{
+      \usefonttheme{serif} % default family is serif
+      \setmainfont[Mapping=tex-text, BoldFont=MetaOT-Bold]{MetaOT}
+    }{
+      \throwerror@metaot{1} % Not installed
+    }
+  \else
+    \throwerror@metaot{0} % Wrong TeX engine
+  \fi
+\fi
+
+\if@legacytoc
+\else
+  \RequirePackage{etoolbox}
+  \usetikzlibrary{tikzmark, decorations.pathreplacing, calligraphy}
+\fi
+
+\if@notes
+  \if@noteswithsquaredgrid
+    \RequirePackage{pgfpages}
+    \pgfpagesdeclarelayout{1 on 1 with grid}
+    {
+      \def\pgfpageoptionborder{0pt}
+    }
+    {
+      \pgfpagesphysicalpageoptions{%
+        logical pages=2,
+        physical height=\pgfpageoptionheight,
+        physical width=\pgfpageoptionwidth,
+        last logical shipout=1
+      }
+      \newlength{\handout@temp}\setlength\handout@temp{0pt}
+      \pgfpageslogicalpageoptions{1}{%
+        center={\pgfmathsetlength{\handout@temp}{\pgfphysicalheight - 0.5*(\pgfphysicalwidth/\paperwidth*\paperheight + \pgfpageoptionborder)}\pgfpoint{.5\pgfphysicalwidth}{\handout@temp}},
+        resized width=\pgfphysicalwidth,
+        border shrink=\pgfpageoptionborder,
+        border code=\pgfusepath{clip},
+      }
+      \pgfpageslogicalpageoptions{2}{%
+        copy from=2,
+        center={\pgfmathsetlength{\handout@temp}{0.5*(\pgfphysicalwidth/\paperwidth*\paperheight + \pgfpageoptionborder)}\pgfpoint{.5\pgfphysicalwidth}{\handout@temp}},
+        resized width=\pgfphysicalwidth,
+        border shrink=\pgfpageoptionborder,
+        border code={%
+            \pgfusepath{discard}%
+            \pgfmathsetmacro{\handout@scalefactor}{\paperwidth/(\pgfphysicalwidth - 2*\pgfpageoptionborder)}%
+            \pgfmathsetlength{\handout@temp}{(\pgfphysicalheight - 2*\pgfpageoptionborder)*\handout@scalefactor - \paperheight - .5\pgfpageoptionborder}%
+            \pgfmathsetlength{\handout@temp}{floor(\handout@temp/5mm/\handout@scalefactor)*5mm*\handout@scalefactor}%
+            \pgfpathgrid%
+            [step=\pgfpoint{5mm*\handout@scalefactor}{5mm*\handout@scalefactor}]%
+            {\pgfpoint{0}{0}}%
+            {\pgfpoint{\paperwidth}{\handout@temp}}%
+            \pgfsetstrokecolor{black!35}%
+            \pgfsetroundcap%
+            \pgfsetlinewidth{0.2pt}%
+            \pgfusepath{draw}},
+      }
+    }
+    \pgfpagesuselayout{1 on 1 with grid}[a4paper, border shrink=5mm]
+  \fi
+\fi
+
+
+\def\inserttoctitle{\iflanguage{ngerman}{Übersicht}{Overview}}
+
+% Definition of \pgfaddtoshape taken from https://tex.stackexchange.com/a/14772
+\def\pgfaddtoshape#1#2{%
+  \begingroup
+  \def\pgf@sm@shape@name{#1}%
+  \let\anchor\pgf@sh@anchor
+  #2%
+  \endgroup
+}
+% Define a new anchor "@customwest" that depends on the current section
+\pgfaddtoshape{rectangle}{%
+  \anchor{@customwest}{%
+    \pgf@process{\northeast}%
+    \pgf@ya=\pgf@y% save "north"
+    \pgf@process{\southwest}%
+    \pgf@yb=\pgf@y% save "south"
+    \pgfmathparse{(\insertsectionnumber-1)/(\the\beamer@sectionmax-1)}%
+    \pgfmathsetlength{\pgf@y}{(1-\pgfmathresult)*\pgf@ya + \pgfmathresult*\pgf@yb}%
+  }%
+}
+
+\newcommand<>{\insertfancytoc}{%
+  \begingroup%
+  \setbeamertemplate{frametitle}[OTHAW]%
+  \setbeamertemplate{footline}[OTHAW]%
+  \logowhite%
+  \setbeamertemplate{background}{%
+    \begin{tikzpicture}[remember picture, overlay]
+      \path[fill=orange1]
+      let \p1=(current page.north east),
+      \p2=($(current page.south west)!0.55!(current page.south east) + (0, \beamerbotmargin + 5mm)$),
+      \p3=($(pic cs:toc-\insertsectionnumber) + (0, 1mm)$) in
+      (\p1) -- (\x2, \y1)
+      \ifnum\insertsectionnumber=0\else % if section == 0, there is no entry to point the "arrow" at
+        [rounded corners=2mm]-- ($(\x2, \y3 + 6mm)$)
+        [sharp corners]-- ($(\x2 - 8mm, \y3)$)
+        \ifdim\dimexpr\y3-8mm>\y2 [rounded corners=2mm]-- ($(\x2, \y3 - 6mm)$)\fi\fi
+      \ifdim\dimexpr\y3-16mm<\y2[rounded corners=4mm]\else[rounded corners=10mm]\fi -- (\p2)
+      [sharp corners]-- (\x1, \y2)
+      -- cycle;
+    \end{tikzpicture}%
+  }%
+  \ifnum\insertsectionnumber=0%
+    \begin{frame}#1%
+      \frametitle{\inserttoctitle}%
+      \begingroup%
+      \setlength{\textwidth}{0.49\textwidth}%
+      \tableofcontents[hideallsubsections]%
+      \endgroup%
+    \end{frame}%
+  \else%
+    \begin{frame}#1%
+      \frametitle{\inserttoctitle}%
+      \begingroup%
+      \setlength{\textwidth}{0.49\textwidth}%
+      \tableofcontents[currentsection,hideallsubsections]%
+      \endgroup%
+      \begin{tikzpicture}[remember picture, overlay]
+        \path let \p1=(current page.north east),
+        \p2=($(current page.south west)!0.58!(current page.south east) + (0, \beamerbotmargin + 5mm)$),
+        \p3=($(pic cs:toc-1) + (0, 1mm)$),
+        \p4=($(pic cs:toc-\the\beamer@sectionmax) + (0, 1mm)$),
+        \n5={max(\y2+4mm, \y4)} in
+        ($(\x2, \y3) + (0, 2mm)$) -- ($(\x2, \n5) + (0, -2mm)$)
+        node (sub-toc) [pos=(\insertsectionnumber-1)/(\the\beamer@sectionmax-1), anchor=@customwest] [text width=0.4\paperwidth, inner sep=0pt, outer sep=0pt] {\vskip0pt minus 1filll\tableofcontents[sectionstyle=hide/hide,subsectionstyle=show/show/hide]\vspace*{-3mm}\vskip0pt minus 1filll};
+      \end{tikzpicture}%
+    \end{frame}%
+  \fi%
+  \endgroup%
+  \if@squeezetoc\ifnum\the\beamer@sectionmax>7\ClassWarning{OTHAWbeamer}{There are \the\beamer@sectionmax\space sections, which will make the TOC page overflow. Consider using a different TOC layout, such as 'toc=twocolumn'}\fi\else\ifnum\the\beamer@sectionmax>4\ClassWarning{OTHAWbeamer}{There are \the\beamer@sectionmax\space sections, which will make the TOC page overflow. Using option 'squeezetoc' is strongly recommended}\fi\fi%
+}
+
+\newcommand<>{\insertnormaltoc}{%
+  \begingroup%
+  \setbeamertemplate{frametitle}[OTHAW]%
+  \setbeamertemplate{footline}[OTHAW]%
+  \begin{frame}#1%
+    \frametitle{\inserttoctitle}%
+    \ifnum\insertsectionnumber=0%
+      \tableofcontents[hideallsubsections]%
+    \else%
+      \tableofcontents[currentsection,hideallsubsections]%
+    \fi%
+  \end{frame}%
+  \endgroup%
+  \if@squeezetoc\ifnum\the\beamer@sectionmax>7\ClassWarning{OTHAWbeamer}{There are \the\beamer@sectionmax\space sections, which will make the TOC page overflow. Consider using a different TOC layout, such as 'toc=twocolumn'}\fi\else\ifnum\the\beamer@sectionmax>4\ClassWarning{OTHAWbeamer}{There are \the\beamer@sectionmax\space sections, which will make the TOC page overflow. Consider using options 'squeezetoc' or switching to a different TOC layout with 'toc=twocolumn'}\fi\fi%
+}
+
+\newcommand<>{\inserttwocolumntoc}{%
+  \begingroup%
+  \setbeamertemplate{frametitle}[OTHAW]%
+  \setbeamertemplate{footline}[OTHAW]%
+  \begin{frame}#1%
+    \frametitle{\inserttoctitle}%
+    \pgfmathparse{int(round(\the\beamer@sectionmax/2))}%
+    \begin{minipage}{0.49\textwidth}%
+      \ifnum\insertsectionnumber=0%
+        \tableofcontents[hideallsubsections,sections={-\pgfmathresult}]%
+      \else%
+        \tableofcontents[currentsection,hideallsubsections,sections={-\pgfmathresult}]%
+      \fi%
+    \end{minipage}%
+    \hfill%
+    \pgfmathparse{int(round(\the\beamer@sectionmax/2)+1)}%
+    \begin{minipage}{0.49\textwidth}%
+      \ifnum\insertsectionnumber=0%
+        \tableofcontents[hideallsubsections,sections={\pgfmathresult-}]%
+      \else%
+        \tableofcontents[currentsection,hideallsubsections,sections={\pgfmathresult-}]%
+      \fi%
+    \end{minipage}%
+  \end{frame}%
+  \endgroup%
+  \if@squeezetoc\ifnum\the\beamer@sectionmax>14\ClassWarning{OTHAWbeamer}{There are \the\beamer@sectionmax\space sections, which will make the TOC page overflow. Try to reduce the number of sections}\fi\else\ifnum\the\beamer@sectionmax>8\ClassWarning{OTHAWbeamer}{There are \the\beamer@sectionmax\space sections, which will make the TOC page overflow. Using option 'squeezetoc' is strongly recommended}\fi\fi%
+}
+
+\newcommand<>{\insertlegacytoc}{%
+  \begingroup%
+  \setbeamertemplate{frametitle}[OTHAW]%
+  \setbeamertemplate{footline}[OTHAW]%
+  \begin{frame}#1%
+    \frametitle{\inserttoctitle}%
+    \ifnum\insertsectionnumber=0%
+      \tableofcontents[hideothersubsections]%
+    \else%
+      \tableofcontents[currentsection,hideothersubsections]%
+    \fi%
+  \end{frame}%
+  \endgroup%
+}
+
+\newcommand<>{\inserttoc}{%
+  \if@fancytoc\insertfancytoc#1%
+  \else\if@legacytoc\insertlegacytoc#1%
+    \else\if@twocolumntoc\inserttwocolumntoc#1%
+      \else\insertnormaltoc#1%
+      \fi%
+    \fi%
+  \fi%
+}%
+
+\if@autotoc
+  \AtBeginSection[]{%
+    \if@autotocshowonhandout%
+      \inserttoc%
+    \else%
+      \inserttoc<beamer>%
+    \fi%
+  }%
+\fi
 
 
 \newcommand*{\email}[1]{\def\insertemail{#1}}
 \email{}
 
-% Define \place{} command, defaulting to Kirchheim.
+% Define \place{} command, defaulting to Amberg
 \newcommand*{\place}[1]{\def\insertplace{#1}}
 \place{Amberg}
 
+% Define \faculty{} command, defaulting to an empty string
+\newcommand*{\faculty}[1]{\ifx\empty#1\empty\institute{}\else\institute{\iflanguage{ngerman}{Fakultät}{Faculty} #1}\fi}
 
-% Farbdefinitionen
+% Define \copyrightby{} command, defaulting to an empty string
+\newcommand*{\copyrightby}[1]{\def\insertcopyrightby{#1}}
+\copyrightby{}
+
+% Define \photo{} command
+\newcommand*{\photo}[1]{\def\insertphotouri{#1}}
+\photo{}
+
+% Define \institution{} command
+\newcommand*{\institution}[1]{\def\insertinstitution{#1}}
+\institution{}
+
+% Define \position{} command
+\newcommand*{\position}[1]{\def\insertposition{#1}}
+\position{}
+
+% Define \address{} command
+\newcommand*{\address}[1]{\def\insertaddress{#1}}
+\address{}
+
+% Define \telephone{} command
+\newcommand*{\telephone}[1]{\def\inserttelephone{#1}}
+\telephone{}
+
+% Define \fax{} command
+\newcommand*{\fax}[1]{\def\insertfax{#1}}
+\fax{}
+
+
+% Load repeatedly used images
+\pgfdeclareimage[width=3.5cm]{logo-color}{images/logo-color.pdf}
+\pgfdeclareimage[width=3.5cm]{logo-white}{images/logo-white.pdf}
+
+% Logo colorization functionality
+\newif\if@logowhite\@logowhitefalse
+\newcommand{\logowhite}{\@logowhitetrue}
+\newcommand{\logocolor}{\@logowhitefalse}
+
+
+% OTH Corporate Design color scheme
 \definecolor{schwarz}{RGB}{0,0,0}
 \definecolor{weiss}{RGB}{255,255,255}
 
-\definecolor{orange1}{RGB}{242,148,0}
-\definecolor{orange2}{RGB}{248,187,107}
-\definecolor{orange3}{RGB}{251,214,166}
-\definecolor{orange4}{RGB}{254,240,222}
+\definecolor{orange1}{RGB}{250,125,25}
+\definecolor{orange2}{RGB}{252,177,117}
+\definecolor{orange3}{RGB}{253,203,163}
+\definecolor{orange4}{RGB}{254,229,209}
 
-\definecolor{grau1}{RGB}{176,167,157}
-\definecolor{grau2}{RGB}{203,196,190}
-\definecolor{grau3}{RGB}{223,218,214}
-\definecolor{grau4}{RGB}{243,241,239}
+\definecolor{grau1}{RGB}{81,82,88}
+\definecolor{grau2}{RGB}{150,152,157}
+\definecolor{grau3}{RGB}{185,187,190}
+\definecolor{grau4}{RGB}{220,221,222}
 
-\definecolor{blau1}{RGB}{127,169,182}
-\definecolor{blau2}{RGB}{171,198,207}
-\definecolor{blau3}{RGB}{208,220,224}
-\definecolor{blau4}{RGB}{238,242,243}
+\definecolor{cyan1}{RGB}{29,170,197}
+\definecolor{cyan2}{RGB}{110,214,234}
+\definecolor{cyan3}{RGB}{158,228,241}
+\definecolor{cyan4}{RGB}{207,241,248}
 
-\definecolor{rot1}{RGB}{162,72,133}
-\definecolor{rot2}{RGB}{192,137,174}
-\definecolor{rot3}{RGB}{215,184,207}
-\definecolor{rot4}{RGB}{240,229,237}
+\definecolor{gruen1}{RGB}{69,177,121}
+\definecolor{gruen2}{RGB}{141,211,175}
+\definecolor{gruen3}{RGB}{179,225,201}
+\definecolor{gruen4}{RGB}{217,240,228}
 
-\definecolor{gruen1}{RGB}{120, 162, 110}
-\definecolor{gruen2}{RGB}{172, 194, 160}
-\definecolor{gruen3}{RGB}{205, 217, 196}
-\definecolor{gruen4}{RGB}{237, 240, 233}
+\definecolor{blau1}{RGB}{0,103,160}
+\definecolor{blau2}{RGB}{44,181,255}
+\definecolor{blau3}{RGB}{115,206,255}
+\definecolor{blau4}{RGB}{185,230,255}
 
-% Rand setzen
+\definecolor{lila1}{RGB}{107,52,127}
+\definecolor{lila2}{RGB}{175,114,197}
+\definecolor{lila3}{RGB}{202,161,217}
+\definecolor{lila4}{RGB}{228,208,236}
+
+% Define beamer page layout
 \newlength{\beamerleftmargin}
 \newlength{\beamerrightmargin}
 \newlength{\beamertopmargin}
@@ -155,29 +614,24 @@
 \setbeamersize{sidebar width left=0cm}
 \setbeamersize{sidebar width right=0cm}
 
-\newlength{\othruleheadlinetop}
-\newlength{\othruleheadlinebot}
-\newlength{\othrulefootline}
-\setlength{\othruleheadlinetop}{.4mm}
-\setlength{\othruleheadlinebot}{.4mm}
-\setlength{\othrulefootline}{.1mm}
-
-
-% Festlegung, welche Elemente in welchen Farben dargestellt werden sollen
-\setbeamercolor*{title}{fg=weiss, bg=weiss}
-\setbeamercolor*{frametitle}{fg=schwarz, bg=weiss}
-\setbeamercolor*{normal text}{fg=schwarz, bg=weiss}
+% Define color theme
+\setbeamercolor*{title}{fg=weiss, bg=grau1}
+\setbeamercolor*{frametitle}{fg=grau1, bg=weiss}
+\setbeamercolor*{normal text}{fg=grau1, bg=weiss}
 \setbeamercolor*{alerted text}{fg=orange1, bg=weiss}
 \setbeamercolor*{gray text}{fg=grau1, bg=weiss}
-\setbeamercolor*{footline}{fg=weiss, bg=grau1}
+\setbeamercolor*{footline}{fg=grau1, bg=weiss}
+\setbeamercolor*{contact}{fg=grau1, bg=weiss}
+\setbeamercolor*{thankyou}{fg=weiss, bg=grau1}
 \setbeamercolor*{structure}{fg=orange1}
+\setbeamercolor*{currentsection}{fg=orange1}
 \setbeamercolor*{example text}{fg=gruen1, bg=weiss}
 \setbeamertemplate{blocks}[rounded][shadow=true]
 \setbeamercolor*{block title}{use=structure, fg=weiss, bg=orange1}
-\setbeamercolor*{block title alerted}{use=alerted text, fg=weiss, bg=rot1}
+\setbeamercolor*{block title alerted}{use=alerted text, fg=weiss, bg=lila1}
 \setbeamercolor*{block title example}{use=example text, fg=weiss, bg=gruen1}
 \setbeamercolor*{block body}{parent=normal text, use=block title, bg=orange4}
-\setbeamercolor*{block body alerted}{parent=normal text, use=block title, bg=rot4}
+\setbeamercolor*{block body alerted}{parent=normal text, use=block title, bg=lila4}
 \setbeamercolor*{block body example}{parent=normal text, use=block title, bg=gruen4}
 \setbeamercolor*{button}{fg=weiss, bg=orange1}
 \setbeamercolor{bibliography entry author}{fg=,bg=}
@@ -185,156 +639,299 @@
 \setbeamercolor{bibliography entry location}{fg=,bg=}
 \setbeamercolor{bibliography entry note}{fg=,bg=}
 
-% Festlegung der Schriftarten
+% Define fonts
 \setbeamerfont{tiny structure}{series=\mdseries, size=\tiny}
-\setbeamerfont{title}{series=\bfseries, size=\Large}
-\setbeamerfont{subtitle}{series=\mdseries, size=\large}
-\setbeamerfont*{author}{series=\mdseries, size=\normalsize}
+\setbeamerfont{title}{series=\bfseries, size=\Huge}
+\setbeamerfont{subtitle}{series=\mdseries, size=\normalsize}
+\if@squeezetoc
+  \setbeamerfont{tocsectionnumber}{series=\bfseries, size=\huge}
+  \setbeamerfont{tocsectionnumber shaded}{series=\bfseries, size=\huge}
+\else
+  \setbeamerfont{tocsectionnumber}{series=\bfseries, size=\Huge}
+  \setbeamerfont{tocsectionnumber shaded}{series=\bfseries, size=\Huge}
+\fi
+\setbeamerfont{tocsectionname}{series=\bfseries, size=\normalsize}
+\setbeamerfont{tocsectionname shaded}{series=\mdseries, size=\normalsize}
+\setbeamerfont*{contact}{series=\mdseries, size=\normalsize}
+\setbeamerfont*{thankyou}{series=\mdseries, size=\small}
+\setbeamerfont*{author}{series=\bfseries, size=\normalsize}
 \setbeamerfont{frametitle}{series=\bfseries, size=\large}
 \setbeamerfont{framesubtitle}{series=\mdseries, size=\normalsize}
 \setbeamerfont*{footline}{series=\mdseries, size=\tiny}
-\setbeamerfont*{date}{series=\mdseries, size=\footnotesize}
+\setbeamerfont*{date}{series=\mdseries, size=\tiny}
 \setbeamerfont{block title}{series=\bfseries, size=\normalsize}
 
-% Standardeinstellungen
 \setbeamertemplate{itemize item}[circle]
-\setbeamertemplate{section/subsections in toc}[ball]{}
-\setbeamercolor{section in toc}{fg=schwarz, bg=weiss}
-\setbeamercolor{subsection in toc}{fg=schwarz, bg=weiss}
+\setbeamercolor{section in toc}{fg=grau1, bg=orange1}
+\setbeamercolor{section in toc shaded}{fg=grau1, bg=grau4}
+\if@fancytoc
+  \setbeamercolor{subsection in toc}{fg=weiss, bg=grau1}
+\else
+  \setbeamercolor{subsection in toc}{fg=grau1, bg=weiss}
+\fi
 \setbeamertemplate{headline}{}
 \setbeamertemplate{navigation symbols}{}
 \def\beamer@andinst{\quad}
 
-\setlength\textwidth{\paperwidth}
-\addtolength\textwidth{-30pt}
+\def\vc#1{$\vcenter{\hbox{#1}}$}
+\if@squeezetoc
+  \patchcmd{\beamer@sectionintoc}{\vskip1.5em}{\vskip0.5em}{}{}
+\fi
+\def\@sectionintoc#1{%
+  \parbox{9mm}{\vc{\usebeamerfont{tocsectionnumber#1}\usebeamercolor[bg]{section in toc#1}\ifnum\inserttocsectionnumber<10\relax0\fi\inserttocsectionnumber}\hspace*{-3pt}}~\vc{\usebeamerfont{tocsectionnumber}\usebeamercolor[bg]{section in toc#1}\,|\hfill}~~%
+  \tikzmark{toc-\inserttocsectionnumber}%
+  \vc{\parbox{\textwidth-15mm}{\raggedright\usebeamerfont{tocsectionname#1}\usebeamercolor[fg]{section in toc#1}\inserttocsection}}%
+}
+\defbeamertemplate*{section in toc}{large-numbers}{\@sectionintoc{}}
+\defbeamertemplate*{section in toc shaded}{large-numbers}{\@sectionintoc{ shaded}}
+\defbeamertemplate*{subsection in toc}{large-numbers}{%
+  \tikzmark{toc-\inserttocsectionnumber-\inserttocsubsectionnumber}%
+  \tikzmark{toc-\inserttocsectionnumber-last}%
+  \usebeamerfont{subsection in toc}\usebeamercolor{subsection in toc}\inserttocsubsection\par\vskip3mm%
+}
 
-\newlength{\logowidth}
-\setlength\logowidth{\paperwidth}
-\addtolength\logowidth{-4.53cm}
+\if@legacytoc
+  \setbeamertemplate{section in toc}[default]
+  \setbeamertemplate{section in toc shaded}[default]
+  \setbeamertemplate{subsection in toc}[default]
+\else
+  \setbeamertemplate{section in toc}[large-numbers]
+  \setbeamertemplate{section in toc shaded}[large-numbers]
+  \setbeamertemplate{subsection in toc}[large-numbers]
+\fi
+
+\newlength{\othruleheadlinetop}
+\newlength{\othruleheadlinetoplength}
+\newlength{\othruletitlelength}
+\setlength{\othruleheadlinetop}{1.5pt}
+\setlength{\othruleheadlinetoplength}{1cm}
+\setlength{\othruletitlelength}{2.5cm}
+
+\newlength{\contactphotoborder}
+\setlength{\contactphotoborder}{3pt}
 
 \newlength{\titlewidth}
 \setlength\titlewidth{\paperwidth}
-\addtolength\titlewidth{-3.7cm}
+\addtolength\titlewidth{-4.75cm}
 
-\pgfdeclareimage[width=2.5cm]{folie-logo}{logos/logo-oth-aw-text-seite.png}
+\newlength{\titlelowerbarheight}
+\setlength\titlelowerbarheight{3.25cm}
+\newlength{\titlerightshapeswidth}
+\setlength\titlerightshapeswidth{6.5cm}
 
 \defbeamertemplate*{title page}{OTHAW}{%
-%  \begin{tikzpicture}[remember picture,overlay]
-%  \node[anchor=north east, inner sep=0,outer sep=0, xshift=-.5cm, yshift=-.3cm]   at (current page.north east){%
-%  \pgfuseimage{titel-logo}};
-%\end{tikzpicture}
-
-    \begin{tikzpicture}[remember picture,overlay]
-      \node[above right,inner sep=0pt,outer sep=0pt] at (current page.south west) {
-      \if@amberg
-        \includegraphics[width=\paperwidth, height=\paperheight]{images/amberg-titel.png}
-      \else
-      \if@weiden
-        \includegraphics[width=\paperwidth, height=\paperheight]{images/weiden-titel.png}
-      \else
-      \if@amwen
-        \includegraphics[width=\paperwidth, height=\paperheight]{images/amwen-titel.png}
-      \fi
-      \fi
-      \fi
-      };
-    \end{tikzpicture}
-
-  \vskip5cm
-  \usebeamercolor[fg]{title}
-  {\usebeamerfont{title}\inserttitle}
-  \ifx\insertsubtitle\@empty\else\vskip0.25em%
-    {\usebeamerfont{subtitle}\insertsubtitle\par}%
-  \fi
-  \vskip-.2cm%
-  \color{orange2}\rule{0.5cm}{\othruleheadlinetop}%
-  \vskip.2cm%
-  \begin{beamercolorbox}[sep=0pt]{author}%
-    \usebeamerfont{institute}%
-    \insertdate\\[.1cm]
-    \insertauthor\ | \insertplace
-    %\ifx\insertinstitute\empty\else{\\\usebeamerfont{institute}\insertinstitute}\fi
-    %\ifx\insertemail\empty\else{\\\usebeamerfont{institute}\href{mailto:\insertemail}{\usebeamerfont{institute}\texttt{<\insertemail>}}}\fi
-    %\\[2em]
-    %\mbox{}{\insertplace, \insertdate}\\[1em]
-    %\mbox{}{\inserttitlegraphic}
-
-  \end{beamercolorbox}
+  \begin{tikzpicture}[remember picture,overlay]
+    \node[inner sep=0pt, outer sep=0pt] at (current page.center) [yshift=0.5*\titlelowerbarheight] {
+      \minsizebox{!}{\paperheight-\titlelowerbarheight}{%
+        \minsizebox{\paperwidth}{!}{%
+          \includegraphics[height=1cm]{%
+            images/%
+            \if@amberg amberg.png\fi%
+            \if@weiden weiden.png\fi%
+            \if@amwen amwen.png\fi%
+          }%
+        }%
+      }%
+    };
+    \node (logo) [inner sep=0pt, outer sep=0pt, below right=\beamertopmargin and \beamerleftmargin of current page.north west] {\pgfuseimage{logo-white}};
+    \node (title-lowerbar) [inner sep=0pt, outer sep=0pt, above=0cm of current page.south] [fill=orange1, rectangle, minimum width=\paperwidth, minimum height=\titlelowerbarheight] {};
+    \if@titleshapes
+      \node[inner sep=0pt, outer sep=0pt, above left=0cm of title-lowerbar.north east] {\includegraphics[width=0.75\titlerightshapeswidth]{images/shapes-4.pdf}};
+    \fi
+  \end{tikzpicture}%
+  \vskip0pt plus 1filll%
+  \usebeamercolor[fg]{title}{\usebeamerfont{title}\inserttitle}\vskip0.25em%
+  \ifx\insertsubtitle\@empty\else%
+    {\usebeamerfont{subtitle}\insertsubtitle}%
+  \fi%
+  \ifx\insertsubtitle\@empty\else\ | \fi\insertauthor\ifx\insertinstitute\@empty\else\ | \insertinstitute\fi%
+  \par%
+  \tikz{\draw[line width=\othruleheadlinetop, line cap=round, draw=weiss] (0,0) -- +(\othruletitlelength,0);}\\%
+  \usebeamerfont{date}\insertplace, \insertdate%
+  \ifx\insertcopyrightby\@empty\else~~~\copyright\ \insertcopyrightby\fi\vphantom{Ijg}\vspace*{-2mm-5pt}%
 }
 
+\defbeamertemplate*{title page}{OTHAWminimal}{%
+  \begin{tikzpicture}[remember picture,overlay]
+    \if@orangetitle
+      \node (orange-bar) [inner sep=0pt, outer sep=0pt, left=0cm of current page.east] [fill=orange1, rectangle, minimum width=0.9\titlerightshapeswidth, minimum height=\paperheight] {};
+      \if@titleshapes
+        \node (shapes) [inner sep=0pt, outer sep=0pt, above left=\beamerbotmargin and -0.14\titlerightshapeswidth of current page.south east] {\includegraphics[width=0.9\titlerightshapeswidth]{images/shapes-1.pdf}};
+      \fi
+    \else
+      \if@titleshapes
+        \node (shapes) [inner sep=0pt, outer sep=0pt, above left=\beamerbotmargin and -0.12\titlerightshapeswidth of current page.south east] {\includegraphics[width=\titlerightshapeswidth]{images/shapes-2.pdf}};
+      \fi
+    \fi
+    \node (logo) [inner sep=0pt, outer sep=0pt, below left=\beamertopmargin and \beamerrightmargin of current page.north east] {\if@orangetitle\pgfuseimage{logo-white}\else\pgfuseimage{logo-color}\fi};
+  \end{tikzpicture}%
+  \vskip0pt plus 1filll%
+  \begin{minipage}{\dimexpr\textwidth-\titlerightshapeswidth}%
+    \usebeamercolor[bg]{title}{\usebeamerfont{title}\inserttitle}\vskip0.5em%
+    \ifx\insertsubtitle\@empty\else%
+      {\usebeamerfont{subtitle}\insertsubtitle}\\%
+    \fi%
+    \insertauthor\ifx\insertinstitute\@empty\else\ | \insertinstitute\fi%
+    \par%
+    \tikz{\draw[line width=\othruleheadlinetop, line cap=round, draw=orange1] (0,0) -- +(\othruletitlelength,0);}%
+  \end{minipage}%
+  \vskip0pt plus 1filll%
+  \usebeamerfont{date}\insertplace, \insertdate%
+  \ifx\insertcopyrightby\@empty\else~~~\copyright\ \insertcopyrightby\fi\vphantom{Ijg}\vspace*{-2mm-5pt}%
+}
+
+\def\@footlinecontent{%
+  \vskip5pt%
+  \hskip\beamerleftmargin%
+  \parbox[b][2mm]{\dimexpr\textwidth-\beamerleftmargin-\beamerrightmargin}{%
+    \usebeamercolor{footline}\usebeamerfont{footline}\inserttitle\if@lecture: \insertsubtitle\fi\ | \insertauthor \hfill\insertdate\hspace{0.5cm}%
+    \parbox{\widthof{\inserttotalframenumber}}{\raggedleft\if@indicatelastpageofframe\ifnum\insertpagenumber=\insertframeendpage\color{orange1}\fi\fi\insertframenumber}%
+  }%
+  \vskip\beamerbotmargin%
+}
 \defbeamertemplate*{footline}{OTHAW}{%
-  \ifnum\value{framenumber}=1% check if it's the title frame
-  % do nothing
+  \if@footlinebox%
+    \fboxsep0pt%
+    {\usebeamercolor[bg]{footline}}\colorbox{footline.bg}{\parbox{\textwidth}{\@footlinecontent}}
   \else%
-    \hskip\beamerleftmargin%
-    \fcolorbox{white}{white}{
-    \begin{adjustbox}{minipage=\dimexpr\textwidth-\beamerrightmargin-\beamerleftmargin, margin=0pt 0pt}
-        \color{grau1}\rule{\dimexpr\textwidth-\beamerrightmargin}{\othrulefootline}%\par%
-        \vskip.1cm%
-        \parbox{\dimexpr\textwidth-\beamerrightmargin}{%
-            \color{grau1}\usebeamerfont{footline}\inserttitle\if@lecture: \insertsubtitle\fi\  | \insertauthor \hfill \insertdate \hspace{0.7cm} \insertframenumber\\[-.15cm]
-        }
-    \end{adjustbox}}%
-  \fi
+    \@footlinecontent%
+  \fi%
 }
+\defbeamertemplate*{footline}{empty}{}
 
-%\defbeamertemplate*{footline}{title slide}{%
-%}
-
-
-\defbeamertemplate*{headline}{OTHAW}
-{%
-\begin{tikzpicture}[remember picture,overlay]
-\node[anchor=north east, inner sep=0,outer sep=0, xshift=-\beamerrightmargin, yshift=-\beamertopmargin]   at (current page.north east){%
-\pgfuseimage{folie-logo}};
-\end{tikzpicture}
+\defbeamertemplate*{headline}{OTHAW}{%
+  \begin{tikzpicture}[remember picture,overlay]%
+    \node (logo) [inner sep=0pt, outer sep=0pt, below left=\beamertopmargin and \beamerrightmargin of current page.north east] {\if@logowhite\pgfuseimage{logo-white}\else\pgfuseimage{logo-color}\fi};
+  \end{tikzpicture}%
 }
+\defbeamertemplate*{headline}{empty}{}
 
 \defbeamertemplate*{frametitle}{OTHAW}{%
   \vskip\beamertopmargin
   \if@tochead%
-  \vbox{%
-    \tinyline{\hspace{.2cm}\insertsection\hfill}%
-    \setbox\beamer@tempbox=\hbox{\insertsubsection}%
-    \tinyline{\ifdim\wd\beamer@tempbox>1pt{\hspace{.2cm}\hskip2pt\raise1.9pt\hbox
-         {\vrule width0.4pt height1.875ex\vrule width 5pt height0.4pt}}
-         \hskip1pt\insertsubsection\fi\hfill}%
-  }
-  \vskip.3cm
-  \fi
-  %
-  \ifx\insertframesubtitle\empty%
-    \ifstrempty{\insertframetitle}{%
-    % Draw noting
-    }{
-    \parbox[b][0.3cm]{\titlewidth}{%
-      \usebeamerfont*{frametitle}\usebeamercolor{frametitle}\insertframetitle
-      \mbox{}\\[-.25cm]
-      \color{orange1}\rule{0.5cm}{\othruleheadlinetop}%
+    \vbox{%
+      \tinyline{\hspace{.2cm}\insertsection\hfill}%
+      \setbox\beamer@tempbox=\hbox{\insertsubsection}%
+      \tinyline{\ifdim\wd\beamer@tempbox>1pt{\hspace{.2cm}\hskip2pt\raise1.9pt\hbox
+          {\vrule width0.4pt height1.875ex\vrule width 5pt height0.4pt}}
+          \hskip1pt\insertsubsection\fi\hfill}%
     }
-  }
-  \else
-  \parbox[b][0.8cm]{\titlewidth}{%
-    \usebeamerfont*{frametitle}\usebeamercolor{frametitle}\insertframetitle
-    \newline\usebeamerfont*{framesubtitle}\insertframesubtitle%
-  }
-  \mbox{}\\[-.25cm]
-  \color{orange1}\rule{0.5cm}{\othruleheadlinetop}%
-  \fi
+    \vskip.3cm
+  \fi%
+  \edef\@frametitle{\insertframetitle}\edef\@emptyframetitle{{{}}}%
+  \ifx\@frametitle\@emptyframetitle%
+    % "Empty" title -> draw nothing, but reserve space
+    \parbox[b][8mm]{\titlewidth}{}\mbox{}\\[-.15cm]\tikz{}%
+  \else%
+    % Draw title and subtitle
+    \parbox[b][8mm]{\titlewidth}{%
+      \usebeamerfont*{frametitle}\usebeamercolor{frametitle}\insertframetitle%
+      \ifx\insertframesubtitle\@empty\\[-2mm]\else\\\usebeamerfont*{framesubtitle}\usebeamercolor{framesubtitle}\insertframesubtitle\fi\mbox{}%
+    }%
+    \\[-.15cm]%
+    \begin{tikzpicture}[overlay, remember picture]%
+      \draw[line width=\othruleheadlinetop, line cap=round, draw=orange1] (0,0) -- +(\othruleheadlinetoplength,0);
+    \end{tikzpicture}%
+  \fi%
 }
+\defbeamertemplate*{frametitle}{empty}{}
 
-\setbeamertemplate{footline}[title slide]
+\setbeamertemplate{footline}[OTHAW]%
+\setbeamertemplate{frametitle}[OTHAW]%
+\setbeamertemplate{headline}[OTHAW]%
+\if@minimal\setbeamertemplate{title page}[OTHAWminimal]\else\setbeamertemplate{title page}[OTHAW]\fi%
 
 \def\maketitle{%
+  \begingroup%
+  \setbeamertemplate{headline}[empty]%
+  \setbeamertemplate{footline}[empty]%
+  \setbeamertemplate{frametitle}[empty]%
   \ifbeamer@inframe\titlepage\else\frame{\titlepage}\fi%
-  \setbeamertemplate{frametitle}[OTHAW]%
-  \setbeamertemplate{footline}[OTHAW]
+  \endgroup%
 }
 
-\newenvironment{erlaeuterung}{%
-\addtocounter{framenumber}{-1}
-\begin{frame}
-\frametitle{Erläuterungen}
-}{ \end{frame}}
+\newenvironment{annotation}{%
+  \addtocounter{framenumber}{-1}
+  \begin{frame}
+    \frametitle{\iflanguage{ngerman}{Erläuterungen}{Annotations}}
+    }{ \end{frame}}
+\newenvironment{erlaeuterung}{\begin{annotation}}{\end{annotation}}
+\if@showerlaeuterung\else\excludeversion{annotation}\excludeversion{erlaeuterung}\fi
 
-\if@showerlaeuterung \else \excludeversion{erlaeuterung}\fi
+\newenvironment{contactframe}[1][]{%
+  \setbeamertemplate{background}{%
+    \begin{tikzpicture}[remember picture,overlay]
+      \node (left-box) [inner sep=0pt, outer sep=0pt] [right=-1cm of current page.west, yshift=-5mm, rectangle, rounded corners=6mm, fill=orange1, minimum height=0.6\paperheight, minimum width=0.4\paperwidth + 1cm] {};
+      \ifx\insertphotouri\@empty\else
+        \node (photo-border) [inner sep=0pt, outer sep=0pt] at (left-box.east) [circle, draw=weiss, fill=grau4, minimum width=0.35\paperheight, line width=\contactphotoborder] {};
+        \begin{scope}
+          \path [clip] (left-box.east) circle (0.175\paperheight);
+          \node (photo) [inner sep=0pt, outer sep=0pt] at (left-box.east) {\minsizebox{!}{0.35\paperheight}{\includegraphics[width=0.35\paperheight]{\insertphotouri}}};
+        \end{scope}
+      \fi
+      \node (name) [inner sep=0pt, outer sep=0pt] [above left=0cm and 0.25\paperheight of left-box.east, text width=0.2\paperwidth] {\raggedleft\usebeamerfont{frametitle}\usebeamercolor[bg]{frametitle}\insertauthor\par};
+      \node (position) [inner sep=0pt, outer sep=0pt] [below left=0.05\paperheight and 0cm of name.south east, text width=0.3\paperwidth] {\usebeamerfont{contact}\usebeamercolor[bg]{contact}\raggedleft\insertposition\par};
+      \draw[line width=\othruleheadlinetop, line cap=round, draw=weiss] (name.south east) ++(0, -0.025\paperheight) -- +(-\othruleheadlinetoplength,0);
+    \end{tikzpicture}}%
+  \begin{frame}[environment=contactframe,t,#1]%
+    \frametitle{\iflanguage{ngerman}{Kontakt}{Contact}}
+    \vskip5mm
+    \hfill\begin{adjustbox}{minipage=[c][0.6\paperheight][c]{0.42\paperwidth}, margin=0pt}%
+      \usebeamerfont{contact}\usebeamercolor[fg]{contact}\raggedright\ifx\insertinstitution\@empty\else\insertinstitution\\\fi%
+      \ifx\insertaddress\@empty\else\insertaddress\\[2mm]\fi%
+      \ifx\inserttelephone\@empty\else{}Tel.:~\inserttelephone\\\fi%
+      \ifx\insertfax\@empty\else{}Fax:~\insertfax\\\fi%
+      \ifx\insertemail\@empty\else\href{mailto:\insertemail}{\texttt{\insertemail}}\fi%
+    \end{adjustbox}\par%
+    }{\end{frame}%
+}
+
+\newenvironment{thankyouframe}[1][]{%
+  \setbeamertemplate{footline}[empty]%
+  \setbeamertemplate{frametitle}[empty]%
+  \setbeamertemplate{background}{%
+    \begin{tikzpicture}[remember picture,overlay]
+      \fill [orange1] (current page.south west) rectangle (current page.north east);
+      \node (title) [above right=0cm and \beamerleftmargin of current page.west, anchor=base west, align=left, text width=0.8\paperwidth] {\hspace*{-2mm}\usebeamerfont{title}\usebeamercolor[fg]{title}\insertframetitle\vphantom{Ijg}};
+      \draw[line width=\othruleheadlinetop, line cap=round, draw=weiss] (title.south west) ++(0, -0.0125\paperheight) -- ++(\othruletitlelength,0);
+      \if@thankyoushapes
+        \node (shapes) [inner sep=0pt, outer sep=0pt, above left=\beamerbotmargin and -0.14\titlerightshapeswidth of current page.south east] {\includegraphics[width=\titlerightshapeswidth]{images/shapes-1.pdf}};
+      \fi
+    \end{tikzpicture}}%
+  \logowhite%
+  \begin{frame}[environment=thankyouframe,t,#1]%
+    \xdef\@thankyouframetitle{\iflanguage{ngerman}{Vielen~~Dank!}{Thank~~you!}}%
+    \frametitle{\@thankyouframetitle}%
+    \vskip0.5\paperheight
+    \begin{adjustbox}{minipage=[c][0.365\paperheight][c]{0.6\paperwidth}, margin=0pt}%
+      \raggedright%
+      \usebeamerfont{author}\usebeamercolor[bg]{author}\insertauthor\\
+      \usebeamerfont{thankyou}\usebeamercolor[fg]{thankyou}\ifx\insertinstitution\@empty\else\insertinstitution\\\fi%
+      \ifx\insertaddress\@empty\else\insertaddress\\[2mm]\fi%
+      \ifx\inserttelephone\@empty\else{}Tel.:~\inserttelephone\\\fi%
+      \ifx\insertfax\@empty\else{}Fax:~\insertfax\\\fi%
+      \ifx\insertemail\@empty\else\href{mailto:\insertemail}{\texttt{\insertemail}}\fi%
+    \end{adjustbox}\par%
+    }{%
+  \end{frame}%
+}
+
+
+\newenvironment{breakframe}[1][]{%
+  \setbeamertemplate{footline}[empty]%
+  \setbeamertemplate{frametitle}[empty]%
+  \setbeamertemplate{headline}[empty]%
+  \setbeamertemplate{background}{%
+    \begin{tikzpicture}[remember picture,overlay]
+      \fill [orange1] (current page.south west) rectangle (current page.north east);
+      \if@breakshapes
+        \node (shapes) [inner sep=0pt, outer sep=0pt, below right=0cm of current page.north west] {\includegraphics[width=1.09\paperwidth]{images/shapes-5.pdf}};
+      \fi
+    \end{tikzpicture}}%
+  \begin{frame}[environment=breakframe,t,#1]%
+    \vskip0.45\paperheight
+    \usebeamerfont{title}\usebeamercolor[fg]{title}
+    }{%
+  \end{frame}%
+}
+

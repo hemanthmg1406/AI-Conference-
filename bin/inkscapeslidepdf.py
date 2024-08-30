@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -=- encoding: utf-8 -=-
-# Author: Alexandre Bourget 
-# Copyright (c) 2008: Alexandre Bourget 
+# Author: Alexandre Bourget
+# Copyright (c) 2008: Alexandre Bourget
 # LICENSE: GPLv3
 
 # How to use this script
@@ -36,14 +36,14 @@ def main():
     elif len(sys.argv) == 3:
         PATH = sys.argv[2]
         OUTDIR = sys.argv[1]
-        
+
     else:
         print("Usage: %s [OUTPUT DIRECTORY] SVGFILE" % sys.argv[0])
         sys.exit(1)
-    
+
     DIRNAME, FILENAME = os.path.split(PATH)
     BASENAME = os.path.splitext(FILENAME)[0]
-    
+
     # Take the Wireframes.svg
     f = open(PATH)
     cnt = f.read().encode('utf-8')
@@ -61,7 +61,7 @@ def main():
         svgslide="%s/%s.svg" % (DIRNAME,BASENAME)
         pdfslide="%s/%s.pdf" % (OUTDIR,BASENAME)
 
-        output = str(subprocess.check_output("inkscape1.3 --version", shell=True, stderr=open(os.devnull, 'w')))
+        output = str(subprocess.check_output("inkscape --version", shell=True, stderr=open(os.devnull, 'w')))
 
         if "Inkscape 0." in output:
             print("Inkscape Version = 0.*")
@@ -96,7 +96,7 @@ def main():
     # Get the initial style attribute and keep it
     orig_style = {}
     for l in layers:
-        label = l.attrib.get('{http://www.inkscape.org/namespaces/inkscape}label') 
+        label = l.attrib.get('{http://www.inkscape.org/namespaces/inkscape}label')
         if 'style' not in l.attrib:
             l.set('style', '')
         # Save initial values
@@ -114,7 +114,7 @@ def main():
                 sl_layers = slides[-1].copy()
             else:
                 sl_layers = {}
-                
+
             sl = sl.split(':')
             if len(sl) == 1:
                 sl = sl[0]
