@@ -183,12 +183,12 @@
 {
     \logowhite
     \setbeamertemplate{background}{%
-        \begin{tikzpicture}
-            \node at (current page.center) [outer sep=0pt, inner sep=0pt] {\includegraphics[height=\paperheight]{images/weiden-orig.png}};
+        \begin{tikzpicture}[remember picture, overlay]
+            \node at (current page.center) [outer sep=0pt, inner sep=0pt] {\includegraphics[height=\paperheight]{images/amwen.png}};
         \end{tikzpicture}%
     }
     \setbeamercolor{footline}{fg=weiss, bg=grau2}
-    \begin{frame}{\color{weiss}Frame title can be white, too}
+    \begin{frame}{\color{gruen3}Frame title \color{weiss}can be \color{lila2} set to \color{blau1} custom colors, \color{grau2}too}
         \begin{block}{}
             Macro \texttt{\textbackslash logowhite} changes the OTH-AW logo to white \textit{for all following slides}.\par
             Use \texttt{\textbackslash logocolor} to switch back to the colored version of the OTH-AW logo.\\
