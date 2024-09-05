@@ -1,9 +1,14 @@
 % Vorlage für LaTeX-Beamer nach dem Corporate Design der OTH Amberg-Weiden
 % Autoren: Andreas Aßmuth, Matthias Söllner, Daniel Loebenberger, Sophie Spies, Tobias Bauer
-% Aktuelle Version: v0.05
-% Stand: 31.08.2024
+% Aktuelle Version: v0.05b
+% Stand: 05.09.2024
 %
 % Changelog:
+% v0.05b: Kleinere Änderungen und Bugfixes (05.09.2024)
+%        + Neue Option toc=altstyle und toc=cdstyle
+%        + Springen des TOCs bei Option toc=fancy vermieden
+%        + Funktionalität indicatelastpageofframeminpages hinzugefügt
+%        + Änderung an der Schriftfamilienauswahl
 % v0.05: Umsetzung des neuen Corporate Designs (31.08.2024)
 %        + Titelfolien: Optionen amberg, weiden, amwen, white
 %        + Break-Seite: Umgebung breakframe
@@ -27,7 +32,7 @@
 % v0.01: Erstellung der Klassendatei (20.11.2013)
 %
 
-\ProvidesClass{OTHAWbeamer}[2024/08/31 v0.05 Vorlage Ostbayerische Technische Hochschule Amberg-Weiden]
+\ProvidesClass{OTHAWbeamer}[2024/09/05 v0.05b Vorlage Ostbayerische Technische Hochschule Amberg-Weiden]
 %
 \PassOptionsToPackage{english,greek,ngerman}{babel}
 \DeclareOption*{\PassOptionsToClass{\CurrentOption}{beamer}}
@@ -75,6 +80,7 @@
 
 \newif\if@indicatelastpageofframe
 \@indicatelastpageofframefalse
+\def\indicatelastpageofframeminpages{0}
 
 \newif\if@autotoc
 \@autotocfalse
@@ -92,6 +98,9 @@
 
 \newif\if@squeezetoc
 \@squeezetocfalse
+
+\newif\if@tocaltstyle
+\@tocaltstylefalse
 
 \newif\if@usefontmetaot
 \@usefontmetaottrue
@@ -224,11 +233,6 @@
 \DeclareOption{nosqueezetoc}{
   \@squeezetocfalse
 }
-\DeclareOption{toc=legacy}{
-  \@legacytoctrue
-  \@fancytocfalse
-  \@squeezetocfalse
-}
 \DeclareOption{toc=normal}{
   \@fancytocfalse
   \@twocolumntocfalse
@@ -243,6 +247,18 @@
   \@fancytocfalse
   \@twocolumntoctrue
   \@legacytocfalse
+}
+\DeclareOption{toc=cdstyle}{
+  \@tocaltstylefalse
+}
+\DeclareOption{toc=altstyle}{
+  \@tocaltstyletrue
+}
+\DeclareOption{toc=legacy}{
+  \@legacytoctrue
+  \@fancytocfalse
+  \@squeezetocfalse
+  \@tocaltstylefalse
 }
 
 \DeclareOption{nometaot}{
@@ -301,8 +317,7 @@
   \ifnum\canusefont@metaot=1
     \RequirePackage{fontspec}
     \IfFontExistsTF{MetaOT}{
-      \usefonttheme{serif} % default family is serif
-      \setmainfont[Mapping=tex-text, BoldFont=MetaOT-Bold]{MetaOT}
+      \setsansfont[Ligatures=TeX, BoldFont=MetaOT-Bold]{MetaOT} % MetaOT is sans-serif
     }{
       \throwerror@metaot{1} % Not installed
     }
@@ -310,6 +325,8 @@
     \throwerror@metaot{0} % Wrong TeX engine
   \fi
 \fi
+\usefonttheme{default} % default family is sans-serif
+\usefonttheme[onlymath]{serif} % math mode should be serif
 
 \if@legacytoc
 \else
@@ -413,6 +430,8 @@
       \setlength{\textwidth}{0.49\textwidth}%
       \tableofcontents[hideallsubsections]%
       \endgroup%
+      \begin{tikzpicture}[remember picture, overlay]% insert dummy picture to avoid "jumping" frames
+      \end{tikzpicture}%
     \end{frame}%
   \else%
     \begin{frame}#1%
@@ -651,7 +670,11 @@
   \setbeamerfont{tocsectionnumber shaded}{series=\bfseries, size=\Huge}
 \fi
 \setbeamerfont{tocsectionname}{series=\bfseries, size=\normalsize}
-\setbeamerfont{tocsectionname shaded}{series=\mdseries, size=\normalsize}
+\if@tocaltstyle
+  \setbeamerfont{tocsectionname shaded}{series=\bfseries, size=\normalsize}
+\else
+  \setbeamerfont{tocsectionname shaded}{series=\mdseries, size=\normalsize}
+\fi
 \setbeamerfont*{contact}{series=\mdseries, size=\normalsize}
 \setbeamerfont*{thankyou}{series=\mdseries, size=\small}
 \setbeamerfont*{author}{series=\bfseries, size=\normalsize}
@@ -663,7 +686,11 @@
 
 \setbeamertemplate{itemize item}[circle]
 \setbeamercolor{section in toc}{fg=grau1, bg=orange1}
-\setbeamercolor{section in toc shaded}{fg=grau1, bg=grau4}
+\if@tocaltstyle
+  \setbeamercolor{section in toc shaded}{fg=grau4, bg=grau4}
+\else
+  \setbeamercolor{section in toc shaded}{fg=grau1, bg=grau4}
+\fi
 \if@fancytoc
   \setbeamercolor{subsection in toc}{fg=weiss, bg=grau1}
 \else
@@ -718,6 +745,8 @@
 \setlength\titlelowerbarheight{3.25cm}
 \newlength{\titlerightshapeswidth}
 \setlength\titlerightshapeswidth{6.5cm}
+\newlength{\titlepagetitlewidth}
+\setlength\titlepagetitlewidth{0cm} % 0 = calculate automatically, override if necessary
 
 \defbeamertemplate*{title page}{OTHAW}{%
   \begin{tikzpicture}[remember picture,overlay]
@@ -766,7 +795,8 @@
     \node (logo) [inner sep=0pt, outer sep=0pt, below left=\beamertopmargin and \beamerrightmargin of current page.north east] {\if@orangetitle\pgfuseimage{logo-white}\else\pgfuseimage{logo-color}\fi};
   \end{tikzpicture}%
   \vskip0pt plus 1filll%
-  \begin{minipage}{\dimexpr\textwidth-\titlerightshapeswidth}%
+  \pgfmathsetlength{\titlepagetitlewidth}{\titlepagetitlewidth > 0pt ? \titlepagetitlewidth : \textwidth-\titlerightshapeswidth}%
+  \begin{minipage}{\titlepagetitlewidth}%
     \usebeamercolor[bg]{title}{\usebeamerfont{title}\inserttitle}\vskip0.5em%
     \ifx\insertsubtitle\@empty\else%
       {\usebeamerfont{subtitle}\insertsubtitle}\\%
@@ -785,7 +815,7 @@
   \hskip\beamerleftmargin%
   \parbox[b][2mm]{\dimexpr\textwidth-\beamerleftmargin-\beamerrightmargin}{%
     \usebeamercolor{footline}\usebeamerfont{footline}\inserttitle\if@lecture: \insertsubtitle\fi\ | \insertauthor \hfill\insertdate\hspace{0.5cm}%
-    \parbox{\widthof{\inserttotalframenumber}}{\raggedleft\if@indicatelastpageofframe\ifnum\insertpagenumber=\insertframeendpage\color{orange1}\fi\fi\insertframenumber}%
+    \parbox{\widthof{\inserttotalframenumber}}{\raggedleft\if@indicatelastpageofframe\ifnum\insertpagenumber=\insertframeendpage\ifnum\insertslidenumber>\indicatelastpageofframeminpages\color{orange1}\fi\fi\fi\insertframenumber}%
   }%
   \vskip\beamerbotmargin%
 }

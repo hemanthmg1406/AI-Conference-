@@ -19,9 +19,11 @@
 % + indicatelastpageofframe Colorizes frame counter on the last page of each frame (useful for presentations with many animations)
 % + autotoc                 Automatic table of contents at start of new sections
 % + noautotoc               Disable automatic table of contents at start of new sections [default]
-% + toc=normal              Single-column Corporate Design table of contents [default]
-% + toc=twocolumn           Two-column Corporate Design table of contents (use when there are five or more sections)
+% + toc=normal              Single-column corporate design table of contents [default]
+% + toc=twocolumn           Two-column corporate design table of contents (use when there are five or more sections)
 % + toc=fancy               Fancier table of contents with support for subsections
+% + toc=cdstyle             Use corporate design TOC colors & styles (default)
+% + toc=altstyle            Use slightly modified TOC colors & styles
 % + toc=legacy              Disable all new table of content features and use the previous style
 % + squeezetoc              Change beamer internals to make all table of contents more compact (use when there are five or more sections per column)
 % + nosqueezetoc            Do not try to make table of contents more compact [default]
@@ -56,6 +58,9 @@
 \position{Head of Faculty}
 
 
+% special option explained later
+\def\indicatelastpageofframeminpages{1}
+
 \begin{document}
 \maketitle
 
@@ -69,16 +74,17 @@
     \framesubtitle{Options}
 
     All options must be set when loading \texttt{OTHAWbeamer}, e.g.,\newline\hspace*{5mm}\texttt{\textbackslash{}documentclass[amwen]\{OTHAWbeamer\}}
-
-    \vspace*{5mm}
+    \vspace*{3mm}
     \setlength{\leftmargini}{1.75cm}
     \begin{itemize}
         \item[\texttt{amberg}] Title page with picture of the Amberg campus
         \item[\texttt{weiden}] Title page with picture of the Weiden campus
         \item[\texttt{amwen}] Title page with picture of both campuses
-        \item[\texttt{white}] Title page with no picture\footnote{This is the default option if no (other) option is specified}
+        \item[\texttt{white}] Title page with no picture (default\footnote{This indicates the default option if no (other) option is specified})
         \item[\texttt{orange}] Title page with orange bar
     \end{itemize}
+    \vspace*{3mm}
+    When using the \alert{\texttt{white}} option, one can adjust the width of the title with, e.g.,\newline\hspace*{5mm}\texttt{\textbackslash{}setlength\textbackslash{}titlepagetitlewidth\{\textbackslash{}dimexpr\textbackslash{}textwidth - 2cm\}}
 \end{frame}
 
 \subsection{Shapes}
@@ -95,13 +101,13 @@
         \item[\texttt{(no)titleshapes}] (Disable) Shapes on title page
         \item[\texttt{(no)thankyoushapes}] (Disable) Shapes on thank you page
         \item[\texttt{(no)breakshapes}] (Disable) Shapes on break page
-        \item[\texttt{(no)shapes}] (Disable) Shapes altogether (shorthand for options mentioned above)
+        \item[\texttt{(no)shapes}] (Disable) Shapes altogether\\(shorthand for options mentioned above)
     \end{itemize}
 \end{frame}
 
 \subsection{Table of Contents}
 \begin{frame}
-    \frametitle{Table of Contents (TOCs)}
+    \frametitle{Table of Contents (TOCs) I}
     \framesubtitle{Newly Added Options}
     \setlength{\leftmargini}{3.25cm}
     \begin{itemize}
@@ -111,7 +117,7 @@
     \begin{center}
         Use macro \texttt{\textbackslash{}inserttoc} outside a \texttt{frame} environment to insert a TOC.\\
         The style of the TOC can be varied using the following options:
-        \vspace*{-4mm}
+        \vspace*{-2mm}
     \end{center}\pause%
     \begin{itemize}
         \item[\texttt{toc=normal}] Single-column corporate design TOC (default)
@@ -119,11 +125,24 @@
         \item[\texttt{toc=fancy}] Single-column, fancy TOC with support for subsections\footnotemark
         \item[\texttt{toc=legacy}] Disable all new TOC features and use the previous style
     \end{itemize}
-    \pause
+    \footnotetext<2->{See this presentation for reference}
+\end{frame}
+\begin{frame}
+    \frametitle{Table of Contents (TOCs) II}
+    \framesubtitle{Newly Added Options}
+    \setlength{\leftmargini}{3.25cm}
+    \begin{center}
+        There are more options to customize the style of the TOC.\\
+        They can be used in combination with the options shown on the previous slide:
+        \vspace*{-2mm}
+    \end{center}
+    \begin{itemize}
+        \item[\texttt{toc=cdstyle}] Use corporate design TOC style (default)
+        \item[\texttt{toc=altstyle}] Use a slightly modified version of corporate design TOC style\\(bold and shaded text for other sections)
+    \end{itemize}
     \begin{itemize}
         \item[\texttt{(no)squeezetoc}] (Disable) Whitespace removal and font size adjustment to fit more elements in TOC (use when there are five or more entries per column)
     \end{itemize}
-    \footnotetext<2->{See this presentation for reference}
 \end{frame}
 
 \subsection{Font: MetaOT}
@@ -157,7 +176,9 @@
         \item[\texttt{annotate}] When given, frames in \texttt{annotation} or \texttt{erlaeuterung} environments are written to output PDF, otherwise omitted\pause
         \item[\texttt{indicatelastpageofframe}] Colorizes the frame counter on the last page of each frame.\\This is helpful when using frames with many animation steps.\footnotemark
     \end{itemize}
-    \footnotetext<3>{See this frame for reference; only when all contents are displayed, the frame counter turns orange}
+    It is possible colorize the frame counter only for multi-page frames\footnotemark{} by defining\newline\hspace*{5mm}\texttt{\textbackslash{}def\textbackslash{}indicatelastpageofframeminpages\{1\}}
+    \footnotetext[3]<3->{See this frame for reference; only when all contents are displayed, the frame counter turns orange}
+    \footnotetext[4]<3->{See this presentation for reference; only for frames with multiple pages, the frame counter turns orange}
 \end{frame}
 
 \begin{frame}
