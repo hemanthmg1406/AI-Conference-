@@ -1,16 +1,18 @@
 % Vorlage für LaTeX-Beamer nach dem Corporate Design der OTH Amberg-Weiden
 % Autoren: Andreas Aßmuth, Matthias Söllner, Daniel Loebenberger, Sophie Spies, Tobias Bauer
-% Aktuelle Version: v0.05b
+% Aktuelle Version: v0.05c
 % Stand: 05.09.2024
 %
 % Changelog:
+% v0.05c: Farbschema korrigiert (06.09.2024)
 % v0.05b: Kleinere Änderungen und Bugfixes (05.09.2024)
 %        + Neue Option toc=altstyle und toc=cdstyle
 %        + Springen des TOCs bei Option toc=fancy vermieden
 %        + Funktionalität indicatelastpageofframeminpages hinzugefügt
 %        + Änderung an der Schriftfamilienauswahl
+%        + Längenregister titlepagetitlewidth kann zum Überschreiben der Titelbreite auf einer white-Titelfolie genutzt werden
 % v0.05: Umsetzung des neuen Corporate Designs (31.08.2024)
-%        + Titelfolien: Optionen amberg, weiden, amwen, white
+%        + Titelfolien: Optionen amberg, weiden, amwen, white, orange
 %        + Break-Seite: Umgebung breakframe
 %        + Abschluss-Seite: Umgebungen contactframe, thankyouframe
 %        + Inhaltsverzeichnis an PowerPoint-Vorlage angepasst und erweitert
@@ -25,14 +27,13 @@
 %           + Automatische Inhaltsverzeichnisse bei Abschnittbeginn
 % v0.04: Neues Corporate Design umgesetzt (27.03.2023)
 % v0.03: Überarbeitung Titelfolie, Ausrichtung Information Fußzeile,
-%        Positionierung Logos, Optionen lecture, tochead (09.01.2019)
+%        + Positionierung Logos, Optionen lecture, tochead (09.01.2019)
 % v0.02: Anpassung der Vorlage (14.08.2015)
-% + Ermöglichung der Option "aspectratio=169" für Präsentationen mit Bildformat 16:9
-%
+%        + Ermöglichung der Option "aspectratio=169" für Präsentationen mit Bildformat 16:9
 % v0.01: Erstellung der Klassendatei (20.11.2013)
 %
 
-\ProvidesClass{OTHAWbeamer}[2024/09/05 v0.05b Vorlage Ostbayerische Technische Hochschule Amberg-Weiden]
+\ProvidesClass{OTHAWbeamer}[2024/09/06 v0.05c Vorlage Ostbayerische Technische Hochschule Amberg-Weiden]
 %
 \PassOptionsToPackage{english,greek,ngerman}{babel}
 \DeclareOption*{\PassOptionsToClass{\CurrentOption}{beamer}}
@@ -584,39 +585,39 @@
 \newcommand{\logocolor}{\@logowhitefalse}
 
 
-% OTH Corporate Design color scheme
+% OTH corporate design color scheme
 \definecolor{schwarz}{RGB}{0,0,0}
 \definecolor{weiss}{RGB}{255,255,255}
 
 \definecolor{orange1}{RGB}{250,125,25}
-\definecolor{orange2}{RGB}{252,177,117}
-\definecolor{orange3}{RGB}{253,203,163}
-\definecolor{orange4}{RGB}{254,229,209}
+\colorlet{orange2}{orange1!60!weiss}
+\colorlet{orange3}{orange1!40!weiss}
+\colorlet{orange4}{orange1!20!weiss}
 
-\definecolor{grau1}{RGB}{81,82,88}
-\definecolor{grau2}{RGB}{150,152,157}
-\definecolor{grau3}{RGB}{185,187,190}
-\definecolor{grau4}{RGB}{220,221,222}
+\definecolor{grau1}{RGB}{83,85,90}
+\colorlet{grau2}{grau1!60!weiss}
+\colorlet{grau3}{grau1!40!weiss}
+\colorlet{grau4}{grau1!20!weiss}
 
-\definecolor{cyan1}{RGB}{29,170,197}
-\definecolor{cyan2}{RGB}{110,214,234}
-\definecolor{cyan3}{RGB}{158,228,241}
-\definecolor{cyan4}{RGB}{207,241,248}
+\definecolor{cyan1}{RGB}{31,177,204}
+\colorlet{cyan2}{cyan1!60!weiss}
+\colorlet{cyan3}{cyan1!40!weiss}
+\colorlet{cyan4}{cyan1!20!weiss}
 
 \definecolor{gruen1}{RGB}{69,177,121}
-\definecolor{gruen2}{RGB}{141,211,175}
-\definecolor{gruen3}{RGB}{179,225,201}
-\definecolor{gruen4}{RGB}{217,240,228}
+\colorlet{gruen2}{gruen1!60!weiss}
+\colorlet{gruen3}{gruen1!40!weiss}
+\colorlet{gruen4}{gruen1!20!weiss}
 
-\definecolor{blau1}{RGB}{0,103,160}
-\definecolor{blau2}{RGB}{44,181,255}
-\definecolor{blau3}{RGB}{115,206,255}
-\definecolor{blau4}{RGB}{185,230,255}
+\definecolor{blau1}{RGB}{0,103,159}
+\colorlet{blau2}{blau1!60!weiss}
+\colorlet{blau3}{blau1!40!weiss}
+\colorlet{blau4}{blau1!20!weiss}
 
-\definecolor{lila1}{RGB}{107,52,127}
-\definecolor{lila2}{RGB}{175,114,197}
-\definecolor{lila3}{RGB}{202,161,217}
-\definecolor{lila4}{RGB}{228,208,236}
+\definecolor{lila1}{RGB}{108,53,128}
+\colorlet{lila2}{lila1!60!weiss}
+\colorlet{lila3}{lila1!40!weiss}
+\colorlet{lila4}{lila1!20!weiss}
 
 % Define beamer page layout
 \newlength{\beamerleftmargin}
