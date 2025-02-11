@@ -1,9 +1,13 @@
 % Vorlage für LaTeX-Beamer nach dem Corporate Design der OTH Amberg-Weiden
 % Autoren: Andreas Aßmuth, Matthias Söllner, Daniel Loebenberger, Sophie Spies, Tobias Bauer
-% Aktuelle Version: v0.05c
-% Stand: 05.09.2024
+% Aktuelle Version: v0.05d
+% Stand: 11.02.2025
 %
 % Changelog:
+% v0.05d: Wartungsupdate mit kleineren Bugfixes (11.02.2025)
+%        + Subsubsections werden bei toc=fancy jetzt nur noch im richtigen Kapitel angezeigt
+%        + Darstellung von subsubsections bei toc=fancy verbessert
+%        + Fehler behoben, der zum Kompilierfehler bei toc=fancy geführt hat, wenn die Präsentation nur eine Section hatte
 % v0.05c: Farbschema korrigiert (06.09.2024)
 % v0.05b: Kleinere Änderungen und Bugfixes (05.09.2024)
 %        + Neue Option toc=altstyle und toc=cdstyle
@@ -33,7 +37,7 @@
 % v0.01: Erstellung der Klassendatei (20.11.2013)
 %
 
-\ProvidesClass{OTHAWbeamer}[2024/09/06 v0.05c Vorlage Ostbayerische Technische Hochschule Amberg-Weiden]
+\ProvidesClass{OTHAWbeamer}[2025/02/11 v0.05d Vorlage Ostbayerische Technische Hochschule Amberg-Weiden]
 %
 \PassOptionsToPackage{english,greek,ngerman}{babel}
 \DeclareOption*{\PassOptionsToClass{\CurrentOption}{beamer}}
@@ -398,7 +402,11 @@
     \pgf@ya=\pgf@y% save "north"
     \pgf@process{\southwest}%
     \pgf@yb=\pgf@y% save "south"
-    \pgfmathparse{(\insertsectionnumber-1)/(\the\beamer@sectionmax-1)}%
+    \ifnum\the\beamer@sectionmax<2%
+      \pgfmathparse{0.5}%
+    \else%
+      \pgfmathparse{(\insertsectionnumber-1)/(\the\beamer@sectionmax-1)}%
+    \fi
     \pgfmathsetlength{\pgf@y}{(1-\pgfmathresult)*\pgf@ya + \pgfmathresult*\pgf@yb}%
   }%
 }
@@ -415,7 +423,7 @@
       \p2=($(current page.south west)!0.55!(current page.south east) + (0, \beamerbotmargin + 5mm)$),
       \p3=($(pic cs:toc-\insertsectionnumber) + (0, 1mm)$) in
       (\p1) -- (\x2, \y1)
-      \ifnum\insertsectionnumber=0\else % if section == 0, there is no entry to point the "arrow" at
+      \ifnum\insertsectionnumber=0\else % if section == 0, there is no entry to point the "arrow" to
         [rounded corners=2mm]-- ($(\x2, \y3 + 6mm)$)
         [sharp corners]-- ($(\x2 - 8mm, \y3)$)
         \ifdim\dimexpr\y3-8mm>\y2 [rounded corners=2mm]-- ($(\x2, \y3 - 6mm)$)\fi\fi
@@ -441,6 +449,11 @@
       \setlength{\textwidth}{0.49\textwidth}%
       \tableofcontents[currentsection,hideallsubsections]%
       \endgroup%
+      \ifnum\the\beamer@sectionmax<2%
+        \pgfmathsetmacro{\@pos}{0.5}%
+      \else%
+        \pgfmathsetmacro{\@pos}{(\insertsectionnumber-1)/(\the\beamer@sectionmax-1)}%
+      \fi%
       \begin{tikzpicture}[remember picture, overlay]
         \path let \p1=(current page.north east),
         \p2=($(current page.south west)!0.58!(current page.south east) + (0, \beamerbotmargin + 5mm)$),
@@ -448,7 +461,7 @@
         \p4=($(pic cs:toc-\the\beamer@sectionmax) + (0, 1mm)$),
         \n5={max(\y2+4mm, \y4)} in
         ($(\x2, \y3) + (0, 2mm)$) -- ($(\x2, \n5) + (0, -2mm)$)
-        node (sub-toc) [pos=(\insertsectionnumber-1)/(\the\beamer@sectionmax-1), anchor=@customwest] [text width=0.4\paperwidth, inner sep=0pt, outer sep=0pt] {\vskip0pt minus 1filll\tableofcontents[sectionstyle=hide/hide,subsectionstyle=show/show/hide]\vspace*{-3mm}\vskip0pt minus 1filll};
+        node (sub-toc) [pos=\@pos, anchor=@customwest] [text width=0.4\paperwidth, inner sep=0pt, outer sep=0pt] {\vskip0pt minus 1filll\tableofcontents[sectionstyle=hide/hide,subsectionstyle=show/show/hide,subsubsectionstyle=show/show/show/hide]\vspace*{-3mm}\vskip0pt minus 1filll};
       \end{tikzpicture}%
     \end{frame}%
   \fi%
@@ -717,15 +730,20 @@
   \tikzmark{toc-\inserttocsectionnumber-last}%
   \usebeamerfont{subsection in toc}\usebeamercolor{subsection in toc}\inserttocsubsection\par\vskip3mm%
 }
+\defbeamertemplate*{subsubsection in toc}{large-numbers}{%
+  \usebeamerfont{subsection in toc}\usebeamercolor{subsection in toc}\vskip-2mm\hskip5mm\parbox{\textwidth-5mm}{\inserttocsubsubsection\par}\vskip3mm%
+}
 
 \if@legacytoc
   \setbeamertemplate{section in toc}[default]
   \setbeamertemplate{section in toc shaded}[default]
   \setbeamertemplate{subsection in toc}[default]
+  \setbeamertemplate{subsubsection in toc}[default]
 \else
   \setbeamertemplate{section in toc}[large-numbers]
   \setbeamertemplate{section in toc shaded}[large-numbers]
   \setbeamertemplate{subsection in toc}[large-numbers]
+  \setbeamertemplate{subsubsection in toc}[large-numbers]
 \fi
 
 \newlength{\othruleheadlinetop}

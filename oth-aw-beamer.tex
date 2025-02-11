@@ -21,7 +21,7 @@
 % + noautotoc               Disable automatic table of contents at start of new sections [default]
 % + toc=normal              Single-column corporate design table of contents [default]
 % + toc=twocolumn           Two-column corporate design table of contents (use when there are five or more sections)
-% + toc=fancy               Fancier table of contents with support for subsections
+% + toc=fancy               Fancier table of contents with support for (sub)subsections
 % + toc=cdstyle             Use corporate design TOC colors & styles (default)
 % + toc=altstyle            Use slightly modified TOC colors & styles
 % + toc=legacy              Disable all new table of content features and use the previous style
@@ -269,7 +269,18 @@
 
 \section{Demo Pages}
 \subsection{Demo Page \#1}
+\subsubsection{Subsubsections work in toc=fancy, too, but do not make their title too long}
 
+\begin{frame}
+    \frametitle{Frametitle}
+    \framesubtitle{Frame subtitle}
+
+    \begin{center}
+        You can safely delete all frames before using this template
+    \end{center}
+\end{frame}
+
+\subsubsection{Second subsubsection}
 \begin{frame}
     \frametitle{Frametitle}
     \framesubtitle{Frame subtitle}
