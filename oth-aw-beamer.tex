@@ -29,6 +29,7 @@
 % + nosqueezetoc            Do not try to make table of contents more compact [default]
 % + nometaot                Disable MetaOT corporate design font (required if you have no access to TTF files or using pdf(La)TeX)
 % + ignoremetaot            Disables error messages regarding MetaOT font
+% + condensedmetaot         When not disabled, loads condensed version of MetaOT font
 % + notes                   Generate handouts
 % + notes=withautotoc       Generate handouts with automatic table of contents
 % + notes=withsquaredgrid   Generate A4-handouts with squared grids below each frame
@@ -148,6 +149,7 @@
 \subsection{Font: MetaOT}
 \begin{frame}
     \frametitle{Font: MetaOT}
+    \framesubtitle{General information}
     OTH Amberg-Weiden corporate design uses \textit{MetaOT} as main font.\\
     However, there are two problems:
     \begin{enumerate}
@@ -163,6 +165,27 @@
     \end{itemize}\pause
 
     Option \texttt{ignoremetaot} disables all error messages regarding \textit{MetaOT} font and will print warnings instead.
+\end{frame}
+
+\begin{frame}
+    \frametitle{Font: MetaOT}
+    \framesubtitle{Changes in Version 0.05e}
+    \begin{enumerate}\addtocounter{enumi}{-1}
+        \item Previous behavior: \texttt{OTHAWbeamer} loads MetaOT files with names
+        \begin{itemize}
+            \item \ttfamily \underline{MetaOT.ttf}\footnote{If the underlined font file is detected, \texttt{OTHAWbeamer} assumes the presence of the second font file, too!}, MetaOT-Bold.ttf
+        \end{itemize}
+        \item Starting from version \texttt{0.05e}, class \texttt{OTHAWbeamer} loads italic font shapes automatically, when it detects their presence
+        \begin{itemize}
+            \item Filenames: \ttfamily\underline{MetaOT-Ita.ttf}, MetaOT-BoldIta.ttf
+        \end{itemize}
+        \item Version \texttt{0.05e} introduced a new option \texttt{condendsedmetaot}
+        \begin{itemize}
+            \item Loads \ttfamily \underline{MetaOT-Cond.ttf}, MetaOT-CondBold.ttf \sffamily by default
+            \item Additionally loads \ttfamily \underline{MetaOT-CondIta.ttf}, MetaOT-CondBoldIta.ttf \sffamily if present
+        \end{itemize}
+    \end{enumerate}
+    Examples: \textbf{bold} \textit{italic} \textbf{\textit{bold italic}}
 \end{frame}
 
 \subsection{Miscellaneous Options}

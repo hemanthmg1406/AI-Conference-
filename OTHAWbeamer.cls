@@ -1,9 +1,12 @@
 % Vorlage für LaTeX-Beamer nach dem Corporate Design der OTH Amberg-Weiden
-% Autoren: Andreas Aßmuth, Matthias Söllner, Daniel Loebenberger, Sophie Spies, Tobias Bauer
-% Aktuelle Version: v0.05d
-% Stand: 11.02.2025
+% Autoren: Andreas Aßmuth, Matthias Söllner, Daniel Loebenberger, Sophie Spies, Tobias Bauer, Eduard Hirsch
+% Aktuelle Version: v0.05e
+% Stand: 13.02.2025
 %
 % Changelog:
+% v0.05e: Verbesserungen beim Laden der Hausschrift MetaOT [nicht pdf(La)TeX] (13.02.2025)
+%        + Wenn kursive Schriftschnitte von MetaOT gefunden werden, werden sie automatisch geladen
+%        + Neue Option condensedmetaot, um kompakter Version der Schrift zu laden (auch hier: automatisches Laden von Kursivschnitten, wenn vorhanden)
 % v0.05d: Wartungsupdate mit kleineren Bugfixes (11.02.2025)
 %        + Subsubsections werden bei toc=fancy jetzt nur noch im richtigen Kapitel angezeigt
 %        + Darstellung von subsubsections bei toc=fancy verbessert
@@ -37,7 +40,7 @@
 % v0.01: Erstellung der Klassendatei (20.11.2013)
 %
 
-\ProvidesClass{OTHAWbeamer}[2025/02/11 v0.05d Vorlage Ostbayerische Technische Hochschule Amberg-Weiden]
+\ProvidesClass{OTHAWbeamer}[2025/02/13 v0.05e Vorlage Ostbayerische Technische Hochschule Amberg-Weiden]
 %
 \PassOptionsToPackage{english,greek,ngerman}{babel}
 \DeclareOption*{\PassOptionsToClass{\CurrentOption}{beamer}}
@@ -111,6 +114,8 @@
 \@usefontmetaottrue
 \newif\if@ignoremetaot
 \@ignoremetaotfalse
+\newif\if@usefontcondensedmetaot
+\@usefontcondensedmetaotfalse
 
 \DeclareOption{tochead}{%
   \@tocheadtrue
@@ -273,6 +278,9 @@
 \DeclareOption{ignoremetaot}{
   \@ignoremetaottrue
 }
+\DeclareOption{condensedmetaot}{
+  \@usefontcondensedmetaottrue
+}
 
 % Bildformat 16:9 standardmäßig setzen; Kann weiterhin bei Verwendung der Klasse überschrieben werden
 \PassOptionsToClass{aspectratio=169}{beamer}
@@ -301,6 +309,9 @@
     \def\othawbeamer@errormessage@metaot{Font 'MetaOT' cannot be used with current (La)TeX engine. Switch to LuaLaTeX or XeLaTeX to enable support for TTF fonts or disable 'MetaOT' using option 'nometaot'}
   \else
     \def\othawbeamer@errormessage@metaot{Font 'MetaOT' was not found. Try installing it again or disable 'MetaOT' using option 'nometaot'}
+    \ifnum#1=2
+      \def\othawbeamer@errormessage@metaot{Font 'MetaOT-Cond' was not found. Try installing it again or disable 'MetaOT-Cond' by removing option 'condensedmetaot'}
+    \fi
   \fi
   \AtBeginDocument{
     \if@ignoremetaot
@@ -322,7 +333,43 @@
   \ifnum\canusefont@metaot=1
     \RequirePackage{fontspec}
     \IfFontExistsTF{MetaOT}{
-      \setsansfont[Ligatures=TeX, BoldFont=MetaOT-Bold]{MetaOT} % MetaOT is sans-serif
+      \if@usefontcondensedmetaot
+        \IfFontExistsTF{MetaOT-Cond}{
+          \IfFontExistsTF{MetaOT-CondIta}{
+            \setsansfont{MetaOT-Cond}[
+              Ligatures=TeX,
+              BoldFont=MetaOT-CondBold,
+              ItalicFont=MetaOT-CondIta,
+              BoldItalicFont=MetaOT-CondBoldIta,
+              UprightFont=MetaOT-Cond,
+            ] % MetaOT is sans-serif
+          }{
+            \setsansfont{MetaOT-Cond}[
+              Ligatures=TeX,
+              BoldFont=MetaOT-CondBold,
+              UprightFont=MetaOT-Cond,
+            ] % MetaOT is sans-serif
+          }
+        }{
+          \throwerror@metaot{2} % Condensed variants not installed
+        }
+      \else
+        \IfFontExistsTF{MetaOT-Ita}{
+          \setsansfont{MetaOT}[
+            Ligatures=TeX,
+            BoldFont=MetaOT-Bold,
+            ItalicFont=MetaOT-Ita,
+            BoldItalicFont=MetaOT-BoldIta,
+            UprightFont=MetaOT,
+          ] % MetaOT is sans-serif
+        }{
+          \setsansfont{MetaOT}[
+            Ligatures=TeX,
+            BoldFont=MetaOT-Bold,
+            UprightFont=MetaOT,
+          ] % MetaOT is sans-serif
+        }
+      \fi
     }{
       \throwerror@metaot{1} % Not installed
     }
