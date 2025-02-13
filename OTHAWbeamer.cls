@@ -338,10 +338,10 @@
           \IfFontExistsTF{MetaOT-CondIta}{
             \setsansfont{MetaOT-Cond}[
               Ligatures=TeX,
-              BoldFont=MetaOT-CondBold,
-              ItalicFont=MetaOT-CondIta,
-              BoldItalicFont=MetaOT-CondBoldIta,
-              UprightFont=MetaOT-Cond,
+              BoldFont=MetaOT-CondBold.ttf,
+              ItalicFont=MetaOT-CondIta.ttf,
+              BoldItalicFont=MetaOT-CondBoldIta.ttf,
+              UprightFont=MetaOT-Cond.ttf,
             ] % MetaOT is sans-serif
           }{
             \setsansfont{MetaOT-Cond}[
@@ -357,10 +357,10 @@
         \IfFontExistsTF{MetaOT-Ita}{
           \setsansfont{MetaOT}[
             Ligatures=TeX,
-            BoldFont=MetaOT-Bold,
-            ItalicFont=MetaOT-Ita,
-            BoldItalicFont=MetaOT-BoldIta,
-            UprightFont=MetaOT,
+            BoldFont=MetaOT-Bold.ttf,
+            ItalicFont=MetaOT-Ita.ttf,
+            BoldItalicFont=MetaOT-BoldIta.ttf,
+            UprightFont=MetaOT.ttf,
           ] % MetaOT is sans-serif
         }{
           \setsansfont{MetaOT}[
