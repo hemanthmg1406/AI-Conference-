@@ -1,9 +1,15 @@
 % Vorlage für LaTeX-Beamer nach dem Corporate Design der OTH Amberg-Weiden
 % Autoren: Andreas Aßmuth, Matthias Söllner, Daniel Loebenberger, Sophie Spies, Tobias Bauer, Eduard Hirsch
-% Aktuelle Version: v0.05e
-% Stand: 13.02.2025
+% Aktuelle Version: v0.05f
+% Stand: 10.04.2025
 %
 % Changelog:
+% v0.05f: Layout-Verbesserungen in Fußzeile & Titelfolie (10.04.2025)
+%        + Neue Optionen numberstyle=old, numberstyle=inline, numberstyle=pageref-inline
+%        + Neues Makro \additionalfootlinecontent für weitere Inhalte in Fußzeile
+%        + Stern-Version \additionalfootlinecontent* für selbiges ohne automatischen Whitespace
+%        + Neues Makro \additionaltitlelogo für weitere Logos auf Titelseite
+%        + Stern-Version \additionaltitlelogo* für selbiges ohne automatisches \includegraphics
 % v0.05e: Verbesserungen beim Laden der Hausschrift MetaOT [nicht pdf(La)TeX] (13.02.2025)
 %        + Wenn kursive Schriftschnitte von MetaOT gefunden werden, werden sie automatisch geladen
 %        + Neue Option condensedmetaot, um kompakter Version der Schrift zu laden (auch hier: automatisches Laden von Kursivschnitten, wenn vorhanden)
@@ -40,7 +46,7 @@
 % v0.01: Erstellung der Klassendatei (20.11.2013)
 %
 
-\ProvidesClass{OTHAWbeamer}[2025/02/13 v0.05e Vorlage Ostbayerische Technische Hochschule Amberg-Weiden]
+\ProvidesClass{OTHAWbeamer}[2025/04/10 v0.05f Vorlage Ostbayerische Technische Hochschule Amberg-Weiden]
 %
 \PassOptionsToPackage{english,greek,ngerman}{babel}
 \DeclareOption*{\PassOptionsToClass{\CurrentOption}{beamer}}
@@ -282,6 +288,21 @@
   \@usefontcondensedmetaottrue
 }
 
+\def\@numberstyle{-lnum;+onum}
+\def\@printnumber{liningnums}
+\DeclareOption{numberstyle=old}{
+  \def\@numberstyle{-lnum;+onum}
+  \def\@printnumber{relax}
+}
+\DeclareOption{numberstyle=inline}{
+  \def\@numberstyle{+lnum;-onum}
+  \def\@printnumber{relax}
+}
+\DeclareOption{numberstyle=pageref-inline}{
+  \def\@numberstyle{-lnum;+onum}
+  \def\@printnumber{liningnums}
+}
+
 % Bildformat 16:9 standardmäßig setzen; Kann weiterhin bei Verwendung der Klasse überschrieben werden
 \PassOptionsToClass{aspectratio=169}{beamer}
 
@@ -342,12 +363,14 @@
               ItalicFont=MetaOT-CondIta.ttf,
               BoldItalicFont=MetaOT-CondBoldIta.ttf,
               UprightFont=MetaOT-Cond.ttf,
+              RawFeature={\@numberstyle},
             ] % MetaOT is sans-serif
           }{
             \setsansfont{MetaOT-Cond}[
               Ligatures=TeX,
               BoldFont=MetaOT-CondBold,
               UprightFont=MetaOT-Cond,
+              RawFeature={\@numberstyle},
             ] % MetaOT is sans-serif
           }
         }{
@@ -361,12 +384,14 @@
             ItalicFont=MetaOT-Ita.ttf,
             BoldItalicFont=MetaOT-BoldIta.ttf,
             UprightFont=MetaOT.ttf,
+            RawFeature={\@numberstyle},
           ] % MetaOT is sans-serif
         }{
           \setsansfont{MetaOT}[
             Ligatures=TeX,
             BoldFont=MetaOT-Bold,
             UprightFont=MetaOT,
+            RawFeature={\@numberstyle},
           ] % MetaOT is sans-serif
         }
       \fi
@@ -376,6 +401,8 @@
   \else
     \throwerror@metaot{0} % Wrong TeX engine
   \fi
+\else
+  \def\@printnumber{relax} % command does not work without fontspec package
 \fi
 \usefonttheme{default} % default family is sans-serif
 \usefonttheme[onlymath]{serif} % math mode should be serif
@@ -634,6 +661,17 @@
 \newcommand*{\fax}[1]{\def\insertfax{#1}}
 \fax{}
 
+% Define \additionalfootlinecontent{} command
+\def\additionalfootlinecontent{\@ifstar\@additionalfootlinecontent\@@additionalfootlinecontent}
+\newcommand{\@additionalfootlinecontent}[1]{\def\insertadditionalfootlinecontent{#1}}
+\newcommand{\@@additionalfootlinecontent}[1]{\def\insertadditionalfootlinecontent{\hfill{}#1\hspace{0.5cm}}}
+\additionalfootlinecontent{}
+
+% Define \additionaltitlelogo{} command
+\def\additionaltitlelogo{\@ifstar\@additionaltitlelogo\@@additionaltitlelogo}
+\newcommand{\@additionaltitlelogo}[1]{\def\insertadditionaltitlelogo{#1}}
+\newcommand{\@@additionaltitlelogo}[1]{\def\insertadditionaltitlelogo{\includegraphics[width=3.5cm,height=0.91cm,keepaspectratio]{#1}}}
+\additionaltitlelogo*{}
 
 % Load repeatedly used images
 \pgfdeclareimage[width=3.5cm]{logo-color}{images/logo-color.pdf}
@@ -829,6 +867,7 @@
       }%
     };
     \node (logo) [inner sep=0pt, outer sep=0pt, below right=\beamertopmargin and \beamerleftmargin of current page.north west] {\pgfuseimage{logo-white}};
+    \node (additional-logo) [inner sep=0pt, outer sep=0pt, below right=0 and \beamerleftmargin of logo.north east] {\insertadditionaltitlelogo};
     \node (title-lowerbar) [inner sep=0pt, outer sep=0pt, above=0cm of current page.south] [fill=orange1, rectangle, minimum width=\paperwidth, minimum height=\titlelowerbarheight] {};
     \if@titleshapes
       \node[inner sep=0pt, outer sep=0pt, above left=0cm of title-lowerbar.north east] {\includegraphics[width=0.75\titlerightshapeswidth]{images/shapes-4.pdf}};
@@ -859,6 +898,7 @@
       \fi
     \fi
     \node (logo) [inner sep=0pt, outer sep=0pt, below left=\beamertopmargin and \beamerrightmargin of current page.north east] {\if@orangetitle\pgfuseimage{logo-white}\else\pgfuseimage{logo-color}\fi};
+    \node (additional-logo) [inner sep=0pt, outer sep=0pt, below left=\beamertopmargin and 0 of logo.south east] {\insertadditionaltitlelogo};
   \end{tikzpicture}%
   \vskip0pt plus 1filll%
   \pgfmathsetlength{\titlepagetitlewidth}{\titlepagetitlewidth > 0pt ? \titlepagetitlewidth : \textwidth-\titlerightshapeswidth}%
@@ -880,8 +920,8 @@
   \vskip5pt%
   \hskip\beamerleftmargin%
   \parbox[b][2mm]{\dimexpr\textwidth-\beamerleftmargin-\beamerrightmargin}{%
-    \usebeamercolor{footline}\usebeamerfont{footline}\inserttitle\if@lecture: \insertsubtitle\fi\ | \insertauthor \hfill\insertdate\hspace{0.5cm}%
-    \parbox{\widthof{\inserttotalframenumber}}{\raggedleft\if@indicatelastpageofframe\ifnum\insertpagenumber=\insertframeendpage\ifnum\insertslidenumber>\indicatelastpageofframeminpages\color{orange1}\fi\fi\fi\insertframenumber}%
+    \usebeamercolor{footline}\usebeamerfont{footline}\inserttitle\if@lecture: \insertsubtitle\fi\ | \insertauthor \insertadditionalfootlinecontent\insertdate\hspace{0.5cm}%
+    \parbox{\widthof{\inserttotalframenumber}}{\raggedleft\if@indicatelastpageofframe\ifnum\insertpagenumber=\insertframeendpage\ifnum\insertslidenumber>\indicatelastpageofframeminpages\color{orange1}\fi\fi\fi\expandafter\csname\@printnumber\endcsname\insertframenumber}%
   }%
   \vskip\beamerbotmargin%
 }
