@@ -1,9 +1,12 @@
 % Vorlage für LaTeX-Beamer nach dem Corporate Design der OTH Amberg-Weiden
 % Autoren: Andreas Aßmuth, Matthias Söllner, Daniel Loebenberger, Sophie Spies, Tobias Bauer, Eduard Hirsch
-% Aktuelle Version: v0.05f
-% Stand: 10.04.2025
+% Aktuelle Version: v0.05g
+% Stand: 01.12.2025
 %
 % Changelog:
+% v0.05g: Quality-of-Life-Verbesserungen (01.12.2025)
+%        + toc=fancy ignoriert section*-Definitionen am Ende der Präsentation (z.B. wegen Literaturverzeichnis oder Anhang)
+%        + Verschachtelte itemize-Listen nutzen jetzt circle, triangle, square statt circle, triangle, triangle
 % v0.05f: Layout-Verbesserungen in Fußzeile & Titelfolie (10.04.2025)
 %        + Neue Optionen numberstyle=old, numberstyle=inline, numberstyle=pageref-inline
 %        + Neues Makro \additionalfootlinecontent für weitere Inhalte in Fußzeile
@@ -46,7 +49,7 @@
 % v0.01: Erstellung der Klassendatei (20.11.2013)
 %
 
-\ProvidesClass{OTHAWbeamer}[2025/04/10 v0.05f Vorlage Ostbayerische Technische Hochschule Amberg-Weiden]
+\ProvidesClass{OTHAWbeamer}[2025/12/01 v0.05g Vorlage Ostbayerische Technische Hochschule Amberg-Weiden]
 %
 \PassOptionsToPackage{english,greek,ngerman}{babel}
 \DeclareOption*{\PassOptionsToClass{\CurrentOption}{beamer}}
@@ -461,6 +464,17 @@
 
 \def\inserttoctitle{\iflanguage{ngerman}{Übersicht}{Overview}}
 
+
+\def\@totaltocsections{0}
+\newcount\@maxtocsections
+\@maxtocsections=0\relax
+\AtEndDocument{%
+  \if@filesw
+    \immediate\write\@auxout{\string\@writefile{nav}%
+    {\noexpand\headcommand{\noexpand\gdef\noexpand\@totaltocsections{\the\@maxtocsections}}}}
+  \fi
+}
+
 % Definition of \pgfaddtoshape taken from https://tex.stackexchange.com/a/14772
 \def\pgfaddtoshape#1#2{%
   \begingroup
@@ -476,10 +490,10 @@
     \pgf@ya=\pgf@y% save "north"
     \pgf@process{\southwest}%
     \pgf@yb=\pgf@y% save "south"
-    \ifnum\the\beamer@sectionmax<2%
+    \ifnum\@totaltocsections<2%
       \pgfmathparse{0.5}%
     \else%
-      \pgfmathparse{(\insertsectionnumber-1)/(\the\beamer@sectionmax-1)}%
+      \pgfmathparse{(\insertsectionnumber-1)/(\@totaltocsections-1)}%
     \fi
     \pgfmathsetlength{\pgf@y}{(1-\pgfmathresult)*\pgf@ya + \pgfmathresult*\pgf@yb}%
   }%
@@ -523,16 +537,16 @@
       \setlength{\textwidth}{0.49\textwidth}%
       \tableofcontents[currentsection,hideallsubsections]%
       \endgroup%
-      \ifnum\the\beamer@sectionmax<2%
+      \ifnum\@totaltocsections<2%
         \pgfmathsetmacro{\@pos}{0.5}%
       \else%
-        \pgfmathsetmacro{\@pos}{(\insertsectionnumber-1)/(\the\beamer@sectionmax-1)}%
+        \pgfmathsetmacro{\@pos}{(\insertsectionnumber-1)/(\@totaltocsections-1)}%
       \fi%
       \begin{tikzpicture}[remember picture, overlay]
         \path let \p1=(current page.north east),
         \p2=($(current page.south west)!0.58!(current page.south east) + (0, \beamerbotmargin + 5mm)$),
         \p3=($(pic cs:toc-1) + (0, 1mm)$),
-        \p4=($(pic cs:toc-\the\beamer@sectionmax) + (0, 1mm)$),
+        \p4=($(pic cs:toc-\@totaltocsections) + (0, 1mm)$),
         \n5={max(\y2+4mm, \y4)} in
         ($(\x2, \y3) + (0, 2mm)$) -- ($(\x2, \n5) + (0, -2mm)$)
         node (sub-toc) [pos=\@pos, anchor=@customwest] [text width=0.4\paperwidth, inner sep=0pt, outer sep=0pt] {\vskip0pt minus 1filll\tableofcontents[sectionstyle=hide/hide,subsectionstyle=show/show/hide,subsubsectionstyle=show/show/show/hide]\vspace*{-3mm}\vskip0pt minus 1filll};
@@ -540,7 +554,8 @@
     \end{frame}%
   \fi%
   \endgroup%
-  \if@squeezetoc\ifnum\the\beamer@sectionmax>7\ClassWarning{OTHAWbeamer}{There are \the\beamer@sectionmax\space sections, which will make the TOC page overflow. Consider using a different TOC layout, such as 'toc=twocolumn'}\fi\else\ifnum\the\beamer@sectionmax>4\ClassWarning{OTHAWbeamer}{There are \the\beamer@sectionmax\space sections, which will make the TOC page overflow. Using option 'squeezetoc' is strongly recommended}\fi\fi%
+  \if@squeezetoc\ifnum\@totaltocsections>7\ClassWarning{OTHAWbeamer}{There are \@totaltocsections\space sections, which will make the TOC page overflow. Consider using a different TOC layout, such as 'toc=twocolumn'}\fi\else\ifnum\@totaltocsections>4\ClassWarning{OTHAWbeamer}{There are \@totaltocsections\space sections, which will make the TOC page overflow. Using option 'squeezetoc' is strongly recommended}\fi\fi%
+  \ifnum\@maxtocsections<\insertsectionnumber\@maxtocsections=\insertsectionnumber\fi%
 }
 
 \newcommand<>{\insertnormaltoc}{%
@@ -556,7 +571,7 @@
     \fi%
   \end{frame}%
   \endgroup%
-  \if@squeezetoc\ifnum\the\beamer@sectionmax>7\ClassWarning{OTHAWbeamer}{There are \the\beamer@sectionmax\space sections, which will make the TOC page overflow. Consider using a different TOC layout, such as 'toc=twocolumn'}\fi\else\ifnum\the\beamer@sectionmax>4\ClassWarning{OTHAWbeamer}{There are \the\beamer@sectionmax\space sections, which will make the TOC page overflow. Consider using options 'squeezetoc' or switching to a different TOC layout with 'toc=twocolumn'}\fi\fi%
+  \if@squeezetoc\ifnum\@totaltocsections>7\ClassWarning{OTHAWbeamer}{There are \@totaltocsections\space sections, which will make the TOC page overflow. Consider using a different TOC layout, such as 'toc=twocolumn'}\fi\else\ifnum\@totaltocsections>4\ClassWarning{OTHAWbeamer}{There are \@totaltocsections\space sections, which will make the TOC page overflow. Consider using options 'squeezetoc' or switching to a different TOC layout with 'toc=twocolumn'}\fi\fi%
 }
 
 \newcommand<>{\inserttwocolumntoc}{%
@@ -565,7 +580,7 @@
   \setbeamertemplate{footline}[OTHAW]%
   \begin{frame}#1%
     \frametitle{\inserttoctitle}%
-    \pgfmathparse{int(round(\the\beamer@sectionmax/2))}%
+    \pgfmathparse{int(round(\@totaltocsections/2))}%
     \begin{minipage}{0.49\textwidth}%
       \ifnum\insertsectionnumber=0%
         \tableofcontents[hideallsubsections,sections={-\pgfmathresult}]%
@@ -574,7 +589,7 @@
       \fi%
     \end{minipage}%
     \hfill%
-    \pgfmathparse{int(round(\the\beamer@sectionmax/2)+1)}%
+    \pgfmathparse{int(round(\@totaltocsections/2)+1)}%
     \begin{minipage}{0.49\textwidth}%
       \ifnum\insertsectionnumber=0%
         \tableofcontents[hideallsubsections,sections={\pgfmathresult-}]%
@@ -584,7 +599,7 @@
     \end{minipage}%
   \end{frame}%
   \endgroup%
-  \if@squeezetoc\ifnum\the\beamer@sectionmax>14\ClassWarning{OTHAWbeamer}{There are \the\beamer@sectionmax\space sections, which will make the TOC page overflow. Try to reduce the number of sections}\fi\else\ifnum\the\beamer@sectionmax>8\ClassWarning{OTHAWbeamer}{There are \the\beamer@sectionmax\space sections, which will make the TOC page overflow. Using option 'squeezetoc' is strongly recommended}\fi\fi%
+  \if@squeezetoc\ifnum\@totaltocsections>14\ClassWarning{OTHAWbeamer}{There are \@totaltocsections\space sections, which will make the TOC page overflow. Try to reduce the number of sections}\fi\else\ifnum\@totaltocsections>8\ClassWarning{OTHAWbeamer}{There are \@totaltocsections\space sections, which will make the TOC page overflow. Using option 'squeezetoc' is strongly recommended}\fi\fi%
 }
 
 \newcommand<>{\insertlegacytoc}{%
@@ -784,6 +799,8 @@
 \setbeamerfont{block title}{series=\bfseries, size=\normalsize}
 
 \setbeamertemplate{itemize item}[circle]
+\setbeamertemplate{itemize subitem}[triangle]
+\setbeamertemplate{itemize subsubitem}[square]
 \setbeamercolor{section in toc}{fg=grau1, bg=orange1}
 \if@tocaltstyle
   \setbeamercolor{section in toc shaded}{fg=grau4, bg=grau4}
