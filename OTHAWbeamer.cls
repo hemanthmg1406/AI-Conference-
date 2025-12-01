@@ -1,9 +1,10 @@
 % Vorlage für LaTeX-Beamer nach dem Corporate Design der OTH Amberg-Weiden
 % Autoren: Andreas Aßmuth, Matthias Söllner, Daniel Loebenberger, Sophie Spies, Tobias Bauer, Eduard Hirsch
 % Aktuelle Version: v0.05g
-% Stand: 01.12.2025
+% Stand: 02.12.2025
 %
 % Changelog:
+% v0.05h: Layout-Fix der Titelseite für neuere Beamer-Versionen [3.70+] (02.12.2025)
 % v0.05g: Quality-of-Life-Verbesserungen (01.12.2025)
 %        + toc=fancy ignoriert section*-Definitionen am Ende der Präsentation (z.B. wegen Literaturverzeichnis oder Anhang)
 %        + Verschachtelte itemize-Listen nutzen jetzt circle, triangle, square statt circle, triangle, triangle
@@ -49,7 +50,7 @@
 % v0.01: Erstellung der Klassendatei (20.11.2013)
 %
 
-\ProvidesClass{OTHAWbeamer}[2025/12/01 v0.05g Vorlage Ostbayerische Technische Hochschule Amberg-Weiden]
+\ProvidesClass{OTHAWbeamer}[2025/12/02 v0.05h Vorlage Ostbayerische Technische Hochschule Amberg-Weiden]
 %
 \PassOptionsToPackage{english,greek,ngerman}{babel}
 \DeclareOption*{\PassOptionsToClass{\CurrentOption}{beamer}}
@@ -869,6 +870,17 @@
 \newlength{\titlepagetitlewidth}
 \setlength\titlepagetitlewidth{0cm} % 0 = calculate automatically, override if necessary
 
+% beamer changed some internal spacings between versions 3.68 and 3.72, probably in version 3.70 to fix https://github.com/josephwright/beamer/issues/840
+% This leads to title page issues with broken layouts in newer beamer versions.
+% In order to mitigate this issue, the following switch defines corrective vertical spacings
+\IfClassAtLeastTF{beamer}{2023/05/15}{ % version 3.70
+  % new version
+  \def\beamer@titlepage@fixlayoutspacing{\vspace*{\beamerbotmargin}}
+  }{
+  % old version
+  \def\beamer@titlepage@fixlayoutspacing{\vspace*{-2mm-5pt}}
+}
+
 \defbeamertemplate*{title page}{OTHAW}{%
   \begin{tikzpicture}[remember picture,overlay]
     \node[inner sep=0pt, outer sep=0pt] at (current page.center) [yshift=0.5*\titlelowerbarheight] {
@@ -899,7 +911,7 @@
   \par%
   \tikz{\draw[line width=\othruleheadlinetop, line cap=round, draw=weiss] (0,0) -- +(\othruletitlelength,0);}\\%
   \usebeamerfont{date}\insertplace, \insertdate%
-  \ifx\insertcopyrightby\@empty\else~~~\copyright\ \insertcopyrightby\fi\vphantom{Ijg}\vspace*{-2mm-5pt}%
+  \ifx\insertcopyrightby\@empty\else~~~\copyright\ \insertcopyrightby\fi\vphantom{Ijg}\beamer@titlepage@fixlayoutspacing%
 }
 
 \defbeamertemplate*{title page}{OTHAWminimal}{%
@@ -930,7 +942,7 @@
   \end{minipage}%
   \vskip0pt plus 1filll%
   \usebeamerfont{date}\insertplace, \insertdate%
-  \ifx\insertcopyrightby\@empty\else~~~\copyright\ \insertcopyrightby\fi\vphantom{Ijg}\vspace*{-2mm-5pt}%
+  \ifx\insertcopyrightby\@empty\else~~~\copyright\ \insertcopyrightby\fi\vphantom{Ijg}\beamer@titlepage@fixlayoutspacing%
 }
 
 \def\@footlinecontent{%
