@@ -1,9 +1,10 @@
 % Vorlage für LaTeX-Beamer nach dem Corporate Design der OTH Amberg-Weiden
 % Autoren: Andreas Aßmuth, Matthias Söllner, Daniel Loebenberger, Sophie Spies, Tobias Bauer, Eduard Hirsch
-% Aktuelle Version: v0.05g
-% Stand: 02.12.2025
+% Aktuelle Version: v0.06a
+% Stand: 05.01.2026
 %
 % Changelog:
+% v0.06a: Bugfix für toc=twocolumn, Hinzufügen der Option compressedtitleimages (05.01.2026)
 % v0.05h: Layout-Fix der Titelseite für neuere Beamer-Versionen [3.70+] (02.12.2025)
 % v0.05g: Quality-of-Life-Verbesserungen (01.12.2025)
 %        + toc=fancy ignoriert section*-Definitionen am Ende der Präsentation (z.B. wegen Literaturverzeichnis oder Anhang)
@@ -50,8 +51,8 @@
 % v0.01: Erstellung der Klassendatei (20.11.2013)
 %
 
-\ProvidesClass{OTHAWbeamer}[2025/12/02 v0.05h Vorlage Ostbayerische Technische Hochschule Amberg-Weiden]
-%
+\ProvidesClass{OTHAWbeamer}[2026/01/05 v0.06a Vorlage Ostbayerische Technische Hochschule Amberg-Weiden]
+
 \PassOptionsToPackage{english,greek,ngerman}{babel}
 \DeclareOption*{\PassOptionsToClass{\CurrentOption}{beamer}}
 
@@ -80,6 +81,9 @@
 
 \newif\if@amwen
 \@amwenfalse
+
+\newif\if@usecompressedtitleimages
+\@usecompressedtitleimagesfalse
 
 \newif\if@minimal
 \@minimaltrue
@@ -171,6 +175,10 @@
   \@amwentrue
   \@minimalfalse
   \@orangetitlefalse
+}
+
+\DeclareOption{compressedtitleimages}{
+  \@usecompressedtitleimagestrue
 }
 
 \DeclareOption{white}{
@@ -556,7 +564,6 @@
   \fi%
   \endgroup%
   \if@squeezetoc\ifnum\@totaltocsections>7\ClassWarning{OTHAWbeamer}{There are \@totaltocsections\space sections, which will make the TOC page overflow. Consider using a different TOC layout, such as 'toc=twocolumn'}\fi\else\ifnum\@totaltocsections>4\ClassWarning{OTHAWbeamer}{There are \@totaltocsections\space sections, which will make the TOC page overflow. Using option 'squeezetoc' is strongly recommended}\fi\fi%
-  \ifnum\@maxtocsections<\insertsectionnumber\@maxtocsections=\insertsectionnumber\fi%
 }
 
 \newcommand<>{\insertnormaltoc}{%
@@ -626,6 +633,7 @@
       \fi%
     \fi%
   \fi%
+  \ifnum\@maxtocsections<\insertsectionnumber\@maxtocsections=\insertsectionnumber\fi%
 }%
 
 \if@autotoc
@@ -888,9 +896,9 @@
         \minsizebox{\paperwidth}{!}{%
           \includegraphics[height=1cm]{%
             images/%
-            \if@amberg amberg.png\fi%
-            \if@weiden weiden.png\fi%
-            \if@amwen amwen.png\fi%
+            \if@amberg amberg.\if@usecompressedtitleimages jpg\else png\fi\fi%
+            \if@weiden weiden.\if@usecompressedtitleimages jpg\else png\fi\fi%
+            \if@amwen amwen.\if@usecompressedtitleimages jpg\else png\fi\fi%
           }%
         }%
       }%
