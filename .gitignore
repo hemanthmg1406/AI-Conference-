@@ -1,10 +1,37 @@
 *.aux
+*.fdb_latexmk
+*.fls
 *.log
 *.nav
-*.fls
-*.fdb_latexmk
+*.out
 *.snm
 *.synctex*
 *.toc
-*.out
+*.bbl
+*.blg
+*.xml
+*.vrb
+*.bcf
+*.*-SAVE-ERROR
+.ipynb_checkpoints/
+.Trash-1000/
 
+# Pygment, minted
+*.pygstyle
+*.pygtex
+*_minted-*/
+*.*.minted
+
+# svg package
+svg-inkscape/
+
+# Ignore all PDFs
+*.pdf
+# Exception: Do NOT ignore PDFs that are in any folder named images (or similar)
+!**/*images*/*.pdf
+!**/*img*/*.pdf
+!**/*bilder*/*.pdf
+!**/*abbildungen*/*.pdf
+
+# When using Hephaistos, ignore .devcontainer config (which is specific to user/installation)
+.devcontainer
