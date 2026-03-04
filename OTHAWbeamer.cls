@@ -1,9 +1,10 @@
 % Vorlage für LaTeX-Beamer nach dem Corporate Design der OTH Amberg-Weiden
 % Autoren: Andreas Aßmuth, Matthias Söllner, Daniel Loebenberger, Sophie Spies, Tobias Bauer, Eduard Hirsch
-% Aktuelle Version: v0.06a
-% Stand: 05.01.2026
+% Aktuelle Version: v0.06b
+% Stand: 18.02.2026
 %
 % Changelog:
+% v0.06b: Umzug in neues Repository, Auslagerung von Font-Handling und Farben (18.02.2026)
 % v0.06a: Bugfix für toc=twocolumn, Hinzufügen der Option compressedtitleimages (05.01.2026)
 % v0.05h: Layout-Fix der Titelseite für neuere Beamer-Versionen [3.70+] (02.12.2025)
 % v0.05g: Quality-of-Life-Verbesserungen (01.12.2025)
@@ -51,7 +52,7 @@
 % v0.01: Erstellung der Klassendatei (20.11.2013)
 %
 
-\ProvidesClass{OTHAWbeamer}[2026/01/05 v0.06a Vorlage Ostbayerische Technische Hochschule Amberg-Weiden]
+\ProvidesClass{OTHAWbeamer}[2026/02/18 v0.06b Vorlage OTH-AW Beamer]
 
 \PassOptionsToPackage{english,greek,ngerman}{babel}
 \DeclareOption*{\PassOptionsToClass{\CurrentOption}{beamer}}
@@ -123,13 +124,6 @@
 
 \newif\if@tocaltstyle
 \@tocaltstylefalse
-
-\newif\if@usefontmetaot
-\@usefontmetaottrue
-\newif\if@ignoremetaot
-\@ignoremetaotfalse
-\newif\if@usefontcondensedmetaot
-\@usefontcondensedmetaotfalse
 
 \DeclareOption{tochead}{%
   \@tocheadtrue
@@ -289,40 +283,12 @@
   \@tocaltstylefalse
 }
 
-\DeclareOption{nometaot}{
-  \@usefontmetaotfalse
-  \@ignoremetaotfalse
-}
-\DeclareOption{ignoremetaot}{
-  \@ignoremetaottrue
-}
-\DeclareOption{condensedmetaot}{
-  \@usefontcondensedmetaottrue
-}
-
-\def\@numberstyle{-lnum;+onum}
-\def\@printnumber{liningnums}
-\DeclareOption{numberstyle=old}{
-  \def\@numberstyle{-lnum;+onum}
-  \def\@printnumber{relax}
-}
-\DeclareOption{numberstyle=inline}{
-  \def\@numberstyle{+lnum;-onum}
-  \def\@printnumber{relax}
-}
-\DeclareOption{numberstyle=pageref-inline}{
-  \def\@numberstyle{-lnum;+onum}
-  \def\@printnumber{liningnums}
-}
-
 % Bildformat 16:9 standardmäßig setzen; Kann weiterhin bei Verwendung der Klasse überschrieben werden
 \PassOptionsToClass{aspectratio=169}{beamer}
 
 \ProcessOptions\relax
 \LoadClass[xcolor=table, covered, hyperref={bookmarks}]{beamer}
 
-\RequirePackage{lmodern}
-\RequirePackage[T1]{fontenc}
 \RequirePackage{babel}
 \RequirePackage{graphicx}
 
@@ -336,86 +302,9 @@
 \RequirePackage{calc}
 
 \RequirePackage{iftex}
+\RequirePackage{othaw-fonts}
+\RequirePackage{othaw-colors}
 
-\def\throwerror@metaot#1{
-  \ifnum#1=0
-    \def\othawbeamer@errormessage@metaot{Font 'MetaOT' cannot be used with current (La)TeX engine. Switch to LuaLaTeX or XeLaTeX to enable support for TTF fonts or disable 'MetaOT' using option 'nometaot'}
-  \else
-    \def\othawbeamer@errormessage@metaot{Font 'MetaOT' was not found. Try installing it again or disable 'MetaOT' using option 'nometaot'}
-    \ifnum#1=2
-      \def\othawbeamer@errormessage@metaot{Font 'MetaOT-Cond' was not found. Try installing it again or disable 'MetaOT-Cond' by removing option 'condensedmetaot'}
-    \fi
-  \fi
-  \AtBeginDocument{
-    \if@ignoremetaot
-      \ClassWarning{OTHAWbeamer}{\othawbeamer@errormessage@metaot}
-    \else
-      \ClassError{OTHAWbeamer}{\othawbeamer@errormessage@metaot. In order to ignore this error message specify option 'ignoremetaot'}{}
-    \fi
-  }
-}
-
-\if@usefontmetaot
-  \def\canusefont@metaot{0}
-  \ifluatex
-    \def\canusefont@metaot{1}
-  \fi
-  \ifxetex
-    \def\canusefont@metaot{1}
-  \fi
-  \ifnum\canusefont@metaot=1
-    \RequirePackage{fontspec}
-    \IfFontExistsTF{MetaOT}{
-      \if@usefontcondensedmetaot
-        \IfFontExistsTF{MetaOT-Cond}{
-          \IfFontExistsTF{MetaOT-CondIta}{
-            \setsansfont{MetaOT-Cond}[
-              Ligatures=TeX,
-              BoldFont=MetaOT-CondBold.ttf,
-              ItalicFont=MetaOT-CondIta.ttf,
-              BoldItalicFont=MetaOT-CondBoldIta.ttf,
-              UprightFont=MetaOT-Cond.ttf,
-              RawFeature={\@numberstyle},
-            ] % MetaOT is sans-serif
-          }{
-            \setsansfont{MetaOT-Cond}[
-              Ligatures=TeX,
-              BoldFont=MetaOT-CondBold,
-              UprightFont=MetaOT-Cond,
-              RawFeature={\@numberstyle},
-            ] % MetaOT is sans-serif
-          }
-        }{
-          \throwerror@metaot{2} % Condensed variants not installed
-        }
-      \else
-        \IfFontExistsTF{MetaOT-Ita}{
-          \setsansfont{MetaOT}[
-            Ligatures=TeX,
-            BoldFont=MetaOT-Bold.ttf,
-            ItalicFont=MetaOT-Ita.ttf,
-            BoldItalicFont=MetaOT-BoldIta.ttf,
-            UprightFont=MetaOT.ttf,
-            RawFeature={\@numberstyle},
-          ] % MetaOT is sans-serif
-        }{
-          \setsansfont{MetaOT}[
-            Ligatures=TeX,
-            BoldFont=MetaOT-Bold,
-            UprightFont=MetaOT,
-            RawFeature={\@numberstyle},
-          ] % MetaOT is sans-serif
-        }
-      \fi
-    }{
-      \throwerror@metaot{1} % Not installed
-    }
-  \else
-    \throwerror@metaot{0} % Wrong TeX engine
-  \fi
-\else
-  \def\@printnumber{relax} % command does not work without fontspec package
-\fi
 \usefonttheme{default} % default family is sans-serif
 \usefonttheme[onlymath]{serif} % math mode should be serif
 
@@ -705,41 +594,6 @@
 \newif\if@logowhite\@logowhitefalse
 \newcommand{\logowhite}{\@logowhitetrue}
 \newcommand{\logocolor}{\@logowhitefalse}
-
-
-% OTH corporate design color scheme
-\definecolor{schwarz}{RGB}{0,0,0}
-\definecolor{weiss}{RGB}{255,255,255}
-
-\definecolor{orange1}{RGB}{250,125,25}
-\colorlet{orange2}{orange1!60!weiss}
-\colorlet{orange3}{orange1!40!weiss}
-\colorlet{orange4}{orange1!20!weiss}
-
-\definecolor{grau1}{RGB}{83,85,90}
-\colorlet{grau2}{grau1!60!weiss}
-\colorlet{grau3}{grau1!40!weiss}
-\colorlet{grau4}{grau1!20!weiss}
-
-\definecolor{cyan1}{RGB}{31,177,204}
-\colorlet{cyan2}{cyan1!60!weiss}
-\colorlet{cyan3}{cyan1!40!weiss}
-\colorlet{cyan4}{cyan1!20!weiss}
-
-\definecolor{gruen1}{RGB}{69,177,121}
-\colorlet{gruen2}{gruen1!60!weiss}
-\colorlet{gruen3}{gruen1!40!weiss}
-\colorlet{gruen4}{gruen1!20!weiss}
-
-\definecolor{blau1}{RGB}{0,103,159}
-\colorlet{blau2}{blau1!60!weiss}
-\colorlet{blau3}{blau1!40!weiss}
-\colorlet{blau4}{blau1!20!weiss}
-
-\definecolor{lila1}{RGB}{108,53,128}
-\colorlet{lila2}{lila1!60!weiss}
-\colorlet{lila3}{lila1!40!weiss}
-\colorlet{lila4}{lila1!20!weiss}
 
 % Define beamer page layout
 \newlength{\beamerleftmargin}

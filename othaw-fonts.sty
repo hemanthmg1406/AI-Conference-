@@ -1,0 +1,123 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{othaw-fonts}[2026/02/13 v1.0 OTH-AW Fonts]
+
+\newif\if@usefontmetaot
+\@usefontmetaottrue
+\newif\if@ignoremetaot
+\@ignoremetaotfalse
+\newif\if@usefontcondensedmetaot
+\@usefontcondensedmetaotfalse
+
+\DeclareOption{nometaot}{
+  \@usefontmetaotfalse
+  \@ignoremetaotfalse
+}
+\DeclareOption{ignoremetaot}{
+  \@ignoremetaottrue
+}
+\DeclareOption{condensedmetaot}{
+  \@usefontcondensedmetaottrue
+}
+
+\def\@numberstyle{-lnum;+onum}
+\def\@printnumber{liningnums}
+\DeclareOption{numberstyle=old}{
+  \def\@numberstyle{-lnum;+onum}
+  \def\@printnumber{relax}
+}
+\DeclareOption{numberstyle=inline}{
+  \def\@numberstyle{+lnum;-onum}
+  \def\@printnumber{relax}
+}
+\DeclareOption{numberstyle=pageref-inline}{
+  \def\@numberstyle{-lnum;+onum}
+  \def\@printnumber{liningnums}
+}
+
+\ProcessOptions\relax
+
+\RequirePackage{lmodern}
+\RequirePackage[T1]{fontenc}
+\RequirePackage{iftex}
+
+\def\throwerror@metaot#1{
+  \ifnum#1=0
+    \def\othawfonts@errormessage@metaot{Font 'MetaOT' cannot be used with current (La)TeX engine. Switch to LuaLaTeX or XeLaTeX to enable support for TTF fonts or disable 'MetaOT' using option 'nometaot'}
+  \else
+    \def\othawfonts@errormessage@metaot{Font 'MetaOT' was not found. Try installing it again or disable 'MetaOT' using option 'nometaot'}
+    \ifnum#1=2
+      \def\othawfonts@errormessage@metaot{Font 'MetaOT-Cond' was not found. Try installing it again or disable 'MetaOT-Cond' by removing option 'condensedmetaot'}
+    \fi
+  \fi
+  \AtBeginDocument{
+    \if@ignoremetaot
+      \PackageWarning{othaw-fonts}{\othawfonts@errormessage@metaot}
+    \else
+      \PackageError{othaw-fonts}{\othawfonts@errormessage@metaot. In order to ignore this error message specify option 'ignoremetaot'}{}
+    \fi
+  }
+}
+
+\if@usefontmetaot
+  \def\canusefont@metaot{0}
+  \ifluatex
+    \def\canusefont@metaot{1}
+  \fi
+  \ifxetex
+    \def\canusefont@metaot{1}
+  \fi
+  \ifnum\canusefont@metaot=1
+    \RequirePackage{fontspec}
+    \IfFontExistsTF{MetaOT}{
+      \if@usefontcondensedmetaot
+        \IfFontExistsTF{MetaOT-Cond}{
+          \IfFontExistsTF{MetaOT-CondIta}{
+            \setsansfont{MetaOT-Cond}[
+              Ligatures=TeX,
+              BoldFont=MetaOT-CondBold.ttf,
+              ItalicFont=MetaOT-CondIta.ttf,
+              BoldItalicFont=MetaOT-CondBoldIta.ttf,
+              UprightFont=MetaOT-Cond.ttf,
+              RawFeature={\@numberstyle},
+            ] % MetaOT is sans-serif
+          }{
+            \setsansfont{MetaOT-Cond}[
+              Ligatures=TeX,
+              BoldFont=MetaOT-CondBold,
+              UprightFont=MetaOT-Cond,
+              RawFeature={\@numberstyle},
+            ] % MetaOT is sans-serif
+          }
+        }{
+          \throwerror@metaot{2} % Condensed variants not installed
+        }
+      \else
+        \IfFontExistsTF{MetaOT-Ita}{
+          \setsansfont{MetaOT}[
+            Ligatures=TeX,
+            BoldFont=MetaOT-Bold.ttf,
+            ItalicFont=MetaOT-Ita.ttf,
+            BoldItalicFont=MetaOT-BoldIta.ttf,
+            UprightFont=MetaOT.ttf,
+            RawFeature={\@numberstyle},
+          ] % MetaOT is sans-serif
+        }{
+          \setsansfont{MetaOT}[
+            Ligatures=TeX,
+            BoldFont=MetaOT-Bold,
+            UprightFont=MetaOT,
+            RawFeature={\@numberstyle},
+          ] % MetaOT is sans-serif
+        }
+      \fi
+    }{
+      \throwerror@metaot{1} % Not installed
+    }
+  \else
+    \throwerror@metaot{0} % Wrong TeX engine
+  \fi
+\else
+  \def\@printnumber{relax} % command does not work without fontspec package
+\fi
+\renewcommand{\familydefault}{\sfdefault}
+\providecommand{\liningnums}[1]{#1} % provide a default implementation for pdfLaTeX
