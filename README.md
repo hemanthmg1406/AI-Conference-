@@ -27,6 +27,7 @@ Hinweis: Dieses Repository wird automatisiert aktualisiert.
 ### `latexmk`-Buildsystem
 - Befehl: `latexmk <filename.tex>`
 - Engine grundsätzlich frei wählbar, jedoch kann Hausschrift *MetaOT* ausschließlich mit $\text{Lua}\LaTeX$ oder $\text{X}\exists\LaTeX$ verwendet werden
+- Bei Verwendung von *MetaOT* also: `latexmk -lualatex <filename.tex>`
 
 
 ### Manuell
