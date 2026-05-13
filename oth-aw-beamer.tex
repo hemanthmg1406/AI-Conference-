@@ -1,415 +1,687 @@
-\documentclass[lecture, orange, autotoc, toc=fancy, indicatelastpageofframe, footlinebox]{OTHAWbeamer}
-% OTHAWbeamer supports the following arguments
-% + aspectratio=X               Sets aspect ratio of presentation [default: aspectratio=169]
-% + lecture                     Adds subtitle to footer
-% + amberg                      Title page with Amberg campus
-% + weiden                      Title page with Weiden campus
-% + amwen                       Title page with both campuses
-% + white                       Title page with no picture [default]
-% + orange                      Title page with orange bar
-% + compressedtitleimages       Use compressed (smaller) title images to reduce output file size
-% + titleshapes                 Show shapes on title page [default]
-% + notitleshapes               No shapes on title page
-% + thankyoushapes              Show shapes on thank you page [default]
-% + nothankyoushapes            No shapes on thank you page
-% + breakshapes                 Show shapes on break page [default]
-% + nobreakshapes               No shapes on break page
-% + shapes                      Shortcut for titleshapes, thankyoushapes, breakshapes
-% + noshapes                    Shortcut for notitleshapes, nothankyoushapes, nobreakshapes
-% + annotate                    Show annotation/erlaeuterung environments
-% + indicatelastpageofframe     Colorizes frame counter on the last page of each frame (useful for presentations with many animations)
-% + autotoc                     Automatic table of contents at start of new sections
-% + noautotoc                   Disable automatic table of contents at start of new sections [default]
-% + toc=normal                  Single-column corporate design table of contents [default]
-% + toc=twocolumn               Two-column corporate design table of contents (use when there are five or more sections)
-% + toc=fancy                   Fancier table of contents with support for (sub)subsections
-% + toc=cdstyle                 Use corporate design TOC colors & styles (default)
-% + toc=altstyle                Use slightly modified TOC colors & styles
-% + toc=legacy                  Disable all new table of content features and use the previous style
-% + squeezetoc                  Change beamer internals to make all table of contents more compact (use when there are five or more sections per column)
-% + nosqueezetoc                Do not try to make table of contents more compact [default]
-% + nometaot                    Disable MetaOT corporate design font (required if you have no access to TTF files or using pdf(La)TeX)
-% + ignoremetaot                Disables error messages regarding MetaOT font
-% + condensedmetaot             When not disabled, loads condensed version of MetaOT font
-% + notes                       Generate handouts
-% + notes=withautotoc           Generate handouts with automatic table of contents
-% + notes=withsquaredgrid       Generate A4-handouts with squared grids below each frame
-% + footlinebox                 Add a colored box behind the footline text
-% + numberstyle=old             Old style of numbers with 3, 4, 5, 7, 9 dipping below baseline (only LuaLaTex/XeTeX)
-% + numberstyle=inline          New style of numbers where every digit is the same height (only LuaLaTex/XeTeX)
-% + numberstyle=pageref-inline  Old style of numbers, except in page numbering (bottom right) to avoid a "jumping" footline [default] (only LuaLaTex/XeTeX)
+\documentclass[nometaot,lecture,amberg,autotoc,toc=twocolumn,indicatelastpageofframe,footlinebox]{OTHAWbeamer}
 
-\AtBeginDocument{%
-    \selectlanguage{english} % ngerman, english
-}
+% Packages
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage{tikz}
+\usepackage{multicol}
+\usepackage{array}
+\usepackage{caption}
+\usepackage{subcaption}
 
-\title{OTHAWbeamer}
-\subtitle{The \LaTeX-beamer template of OTH Amberg-Weiden}
-\author{Erika Mustermann}
+\usetikzlibrary{positioning, arrows.meta, shapes.geometric}
+
+% Presentation Information
+\title{AI CONFRENCE}
+\subtitle{In-context Cascade Segmentation }
+
+\author{Hemanthkumar}
+\institution{Ostbayerische Technische Hochschule Amberg-Weiden}
+
 \place{Amberg}
 \date{\today}
-%\faculty{EMI} % optional
-\copyrightby{OTH Amberg-Weiden} % optional
 
-% contact information; everything is optional and shown on contactframe and thankyouframe
-\email{e.mustermann@oth-aw.de}
-\institution{Ostbayerische Technische Hochschule (OTH) Amberg-Weiden}
-\address{Kaiser-Wilhelm-Ring 23 | 92224 Amberg}
-\telephone{+49 (9621) 482-0}
-\fax{+49 (9621) 482-1}
+\email{h.muthusamy-gunasekaran@oth-aw.de}
 
-% more contact information; everything is optional and shown on contactframe
-\photo{images/erikamustermann.png}
-\position{Head of Faculty}
-
-% add a custom logo to title page
-% \additionaltitlelogo{images/logo-color.pdf}
-
-% special option explained later
-\def\indicatelastpageofframeminpages{1}
-
+% Begin Document
 \begin{document}
+
+% Title Page
 \maketitle
 
+% Table of Contents
 \inserttoc
 
-\section{Options}
-\subsection{Title Page}
+% SECTION 1 — INTRODUCTION
+
+\section{Introduction}
+
+% Motivation
+\subsection{Motivation}
 
 \begin{frame}
-    \frametitle{Title Page}
-    \framesubtitle{Options}
+    \frametitle{Why Medical Image Segmentation Matters}
+    \framesubtitle{Clinical Importance}
 
-    All options must be set when loading \texttt{OTHAWbeamer}, e.g.,\newline\hspace*{5mm}\texttt{\textbackslash{}documentclass[amwen]\{OTHAWbeamer\}}
-    \vspace*{3mm}
-    \setlength{\leftmargini}{1.75cm}
     \begin{itemize}
-        \item[\texttt{amberg}] Title page with picture of the Amberg campus
-        \item[\texttt{weiden}] Title page with picture of the Weiden campus
-        \item[\texttt{amwen}] Title page with picture of both campuses
-        \item[\texttt{white}] Title page with no picture (default\footnote{This indicates the default option if no (other) option is specified})
-        \item[\texttt{orange}] Title page with orange bar
-    \end{itemize}
-    \vspace*{3mm}
-    When using the \alert{\texttt{white}} option, one can adjust the width of the title with, e.g.,\newline\hspace*{5mm}\texttt{\textbackslash{}setlength\textbackslash{}titlepagetitlewidth\{\textbackslash{}dimexpr\textbackslash{}textwidth - 2cm\}}
-\end{frame}
-
-\subsection{Shapes}
-\begin{frame}
-    \frametitle{Shapes}
-    \framesubtitle{Options}
-
-    The new corporate design template employs several abstract shapes.\\
-    They are enabled by default, but can be disabled at wish.
-
-    \vspace*{5mm}
-    \setlength{\leftmargini}{3.75cm}
-    \begin{itemize}
-        \item[\texttt{(no)titleshapes}] (Disable) Shapes on title page
-        \item[\texttt{(no)thankyoushapes}] (Disable) Shapes on thank you page
-        \item[\texttt{(no)breakshapes}] (Disable) Shapes on break page
-        \item[\texttt{(no)shapes}] (Disable) Shapes altogether\\(shorthand for options mentioned above)
-    \end{itemize}
-\end{frame}
-
-\subsection{Table of Contents}
-\begin{frame}
-    \frametitle{Table of Contents (TOCs) I}
-    \framesubtitle{Newly Added Options}
-    \setlength{\leftmargini}{3.25cm}
-    \begin{itemize}
-        \item[\texttt{autotoc}] Automatic TOC generation at start of new sections
-        \item[\texttt{noautotoc}] Disable this feature (default)
-    \end{itemize}
-    \begin{center}
-        Use macro \texttt{\textbackslash{}inserttoc} outside a \texttt{frame} environment to insert a TOC.\\
-        The style of the TOC can be varied using the following options:
-        \vspace*{-2mm}
-    \end{center}\pause%
-    \begin{itemize}
-        \item[\texttt{toc=normal}] Single-column corporate design TOC (default)
-        \item[\texttt{toc=twocolumn}] Two-column corporate design TOC
-        \item[\texttt{toc=fancy}] Single-column, fancy TOC with support for subsections\footnotemark
-        \item[\texttt{toc=legacy}] Disable all new TOC features and use the previous style
-    \end{itemize}
-    \footnotetext<2->{See this presentation for reference}
-\end{frame}
-\begin{frame}
-    \frametitle{Table of Contents (TOCs) II}
-    \framesubtitle{Newly Added Options}
-    \setlength{\leftmargini}{3.25cm}
-    \begin{center}
-        There are more options to customize the style of the TOC.\\
-        They can be used in combination with the options shown on the previous slide:
-        \vspace*{-2mm}
-    \end{center}
-    \begin{itemize}
-        \item[\texttt{toc=cdstyle}] Use corporate design TOC style (default)
-        \item[\texttt{toc=altstyle}] Use a slightly modified version of corporate design TOC style\\(bold and shaded text for other sections)
-    \end{itemize}
-    \begin{itemize}
-        \item[\texttt{(no)squeezetoc}] (Disable) Whitespace removal and font size adjustment to fit more elements in TOC (use when there are five or more entries per column)
-    \end{itemize}
-\end{frame}
-
-\subsection{Font: MetaOT}
-\begin{frame}
-    \frametitle{Font: MetaOT}
-    \framesubtitle{General information}
-    OTH Amberg-Weiden corporate design uses \textit{MetaOT} as main font.\\
-    However, there are two problems:
-    \begin{enumerate}
-        \item it is not free (as in: there is a licensing fee)
-        \item it is only available in \texttt{TTF} format
-    \end{enumerate}\pause
-
-    The ``solution'' is two-fold:
-    \setlength{\leftmargini}{2cm}
-    \begin{itemize}
-        \item[Students] No access to \textit{MetaOT}\\$\rightarrow$ specify option \texttt{nometaot} when using the \texttt{OTHAWbeamer} class
-        \item[Staff] Access to \textit{MetaOT}'s \texttt{TTF} files\\$\rightarrow$ Compiling with \alert{pdf(La)TeX}: specify option \texttt{nometaot}\\$\rightarrow$ Compiling with \alert{Lua(La)TeX} or \alert{Xe(La)TeX}: \textit{MetaOT} is used by default
-    \end{itemize}\pause
-
-    Option \texttt{ignoremetaot} disables all error messages regarding \textit{MetaOT} font and will print warnings instead.
-\end{frame}
-
-\begin{frame}
-    \frametitle{Font: MetaOT}
-    \framesubtitle{Changes in Version 0.05e}
-    \begin{enumerate}\addtocounter{enumi}{-1}
-        \item Previous behavior: \texttt{OTHAWbeamer} loads MetaOT files with names
+        \item MRI and CT segmentation is essential for:
         \begin{itemize}
-            \item \ttfamily \underline{MetaOT.ttf}\footnote{If the underlined font file is detected, \texttt{OTHAWbeamer} assumes the presence of the second font file, too!}, MetaOT-Bold.ttf
+            \item Surgical planning
+            \item Radiotherapy planning
+            \item Disease monitoring
+            \item Treatment evaluation
         \end{itemize}
-        \item Starting from version \texttt{0.05e}, class \texttt{OTHAWbeamer} loads italic font shapes automatically, when it detects their presence
-        \begin{itemize}
-            \item Filenames: \ttfamily\underline{MetaOT-Ita.ttf}, MetaOT-BoldIta.ttf
-        \end{itemize}
-        \item Version \texttt{0.05e} introduced a new option \texttt{condensedmetaot}
-        \begin{itemize}
-            \item Loads \ttfamily \underline{MetaOT-Cond.ttf}, MetaOT-CondBold.ttf \sffamily by default
-            \item Additionally loads \ttfamily \underline{MetaOT-CondIta.ttf}, MetaOT-CondBoldIta.ttf \sffamily if present
-        \end{itemize}
-    \end{enumerate}
-    Examples: \textbf{bold} \textit{italic} \textbf{\textit{bold italic}}
-\end{frame}
 
-\begin{frame}
-    \frametitle{Font: MetaOT -- Numberstyle (LuaLaTeX/XeTeX only)}
-    \framesubtitle{Changes in Version 0.05f}
-    \begin{itemize}
-        \item Option \texttt{numberstyle=old} for old-style numbers
-        \item Option \texttt{numberstyle=inline} for new-style numbers
-        \item Option \texttt{numberstyle=pageref-inline} for old-style numbers, except for page numbering in the bottom right corner (default)
+        \vspace{0.5em}
+
+        \item Manual annotation is expensive and time-consuming
+
+        \item Sequential volumes contain many slices requiring expert labeling
     \end{itemize}
+
     \vspace{1em}
-    Example:\\
-    \hspace{2em}
-    \begin{tabular}{cc}
-        old & inline \\
-        {0123456789} & \liningnums{0123456789}\\
-    \end{tabular}
-\end{frame}
 
-\subsection{Miscellaneous Options}
-\begin{frame}
-    \frametitle{Miscellaneous Options}
-    \framesubtitle{Changes and Descriptions}
-    \setlength{\leftmargini}{4.75cm}
-    \begin{itemize}
-        \item[\texttt{aspectratio=XYZ}] Default changed to 169; can still be overridden\pause
-        \item[\texttt{lecture}] When given, displays the subtitle in footer
-        \item[\texttt{annotate}] When given, frames in \texttt{annotation} or \texttt{erlaeuterung} environments are written to output PDF, otherwise omitted\pause
-        \item[\texttt{indicatelastpageofframe}] Colorizes the frame counter on the last page of each frame.\\This is helpful when using frames with many animation steps.\footnotemark
-    \end{itemize}
-    It is possible colorize the frame counter only for multi-page frames\footnotemark{} by defining\newline\hspace*{5mm}\texttt{\textbackslash{}def\textbackslash{}indicatelastpageofframeminpages\{1\}}
-    \footnotetext[4]<3->{See this frame for reference; only when all the content is displayed, the frame counter turns orange}
-    \footnotetext[5]<3->{See this presentation for reference; only for frames with multiple pages, the frame counter turns orange}
+    % Suggested visual:
+    % MRI volume or annotation workflow figure
+
 \end{frame}
 
 \begin{frame}
-    \frametitle{Miscellaneous Options}
-    \framesubtitle{Included and Extended for Compatibility}
-    \setlength{\leftmargini}{4.5cm}
+    \frametitle{Annotation Burden in Medical Imaging}
+    \framesubtitle{The Core Challenge}
+
+    \begin{block}{Problem}
+        High-quality segmentation requires extensive pixel-level annotations from medical experts.
+    \end{block}
+
+    \vspace{0.8em}
+
     \begin{itemize}
-        \item[\texttt{tochead}] Displays a (small) table of contents above a frame's title
-        \item[\texttt{notochead}] Disables \texttt{tochead} (default)
-        \item[\texttt{notes}] Generates handouts and disables all animations;\\also disables \texttt{indicatelastpageofframe};\\does not show automatically generated table of contents
-        \item[\texttt{notes=withautotoc}] Same as \texttt{notes}, but show automatically generated TOCs
-        \item[\texttt{notes=withsquaredgrid}] Same as \texttt{notes}, but generate A4 pages with squared grid lines for personal notes
-        \item[\texttt{footlinebox}] Activates a colored box behind the footline
-        \item[\texttt{nofootlinebox}] Disables a colored box behind the footline, i.e. making it transparent (default)
+        \item Large datasets are difficult to annotate
+        \item Rare diseases have limited labeled data
+        \item Annotation cost limits scalability
     \end{itemize}
+
+    \vspace{1em}
+
+    \centering
+    \Large
+    Goal: Reduce annotation requirements while maintaining segmentation quality
+
 \end{frame}
+
+% Problem Statement
+\subsection{Problem Statement}
+
 \begin{frame}
-    \frametitle{Changes in Version 0.06a}
-    \framesubtitle{Options \& Repository}
-    \setlength{\leftmargini}{4.5cm}
-    \begin{itemize}
-        \item[\texttt{compressedtitleimages}] When using title page designs \texttt{amberg}, \texttt{weiden} or \texttt{amwen}, lower-quality JPG-files are used to reduce presentation file size
-        \item[Repository] Removal of (legacy) \texttt{./bin/} folder and \texttt{Makefile} script;\\For building \LaTeX\ presentations with \texttt{OTHAWbeamer} use \texttt{latexmk}\\Consider using Hephaistos:
+    \frametitle{Sequential Segmentation Problem}
+    \framesubtitle{Why Slice-wise Inference Fails}
+
+    \begin{columns}[T]
+
+        \column{0.52\textwidth}
+
         \begin{itemize}
-            \item[Docker] \url{https://hub.docker.com/r/othawemi/hephaistos}
-            \item[Container-Source] \url{https://git.oth-aw.de/latex-tools/hephaistos}
-            \item[VS-Code-Devcontainer] \url{https://git.oth-aw.de/latex-tools/hephaistos-vscode}
+            \item Consecutive MRI/CT slices are strongly correlated
+
+            \item Standard few-shot methods process each slice independently
+
+            \item This leads to:
+            \begin{itemize}
+                \item Inconsistent boundaries
+                \item Missing structures
+                \item Unstable predictions
+            \end{itemize}
+        \end{itemize}
+
+        \column{0.42\textwidth}
+
+        % Suggested visual:
+        % Neighboring slice inconsistency example
+
+    \end{columns}
+
+\end{frame}
+
+% SECTION 2 — BACKGROUND
+
+\section{Background}
+
+% Medical Segmentation Evolution
+\subsection{Medical Segmentation Evolution}
+
+\begin{frame}
+    \frametitle{Evolution of Medical Image Segmentation}
+    \framesubtitle{From CNNs to Foundation Models}
+
+    \begin{itemize}
+        \item Traditional machine learning methods
+        \item U-Net and encoder-decoder architectures
+        \item Transformer-based segmentation models
+        \item Foundation models for medical imaging
+    \end{itemize}
+
+    \vspace{1em}
+
+    % Suggested visual:
+    % Timeline of segmentation evolution
+
+\end{frame}
+
+% UniverSeg
+\subsection{What is UniverSeg?}
+
+\begin{frame}
+    \frametitle{UniverSeg}
+    \framesubtitle{Few-shot Medical Image Segmentation}
+
+    \begin{itemize}
+        \item Universal segmentation framework
+        \item Trained on 53 medical imaging datasets
+        \item Performs segmentation without additional retraining
+    \end{itemize}
+
+    \vspace{1em}
+
+    \begin{block}{Core Idea}
+        A small support set guides segmentation of unseen query images.
+    \end{block}
+
+\end{frame}
+
+\begin{frame}
+    \frametitle{UniverSeg Workflow}
+    \framesubtitle{Support and Query Relationship}
+
+    \centering
+
+    % Insert Figure 1 here
+    % \includegraphics[width=0.9\textwidth]{figures/universeg_pipeline.png}
+
+    \vspace{1em}
+
+    \begin{itemize}
+        \item Support images contain known labels
+        \item Query image is segmented using contextual guidance
+        \item No fine-tuning required
+    \end{itemize}
+
+\end{frame}
+
+% Limitations
+\subsection{Limitations of Standard UniverSeg}
+
+\begin{frame}
+    \frametitle{Limitations of Slice-wise Inference}
+    \framesubtitle{Missing Sequential Context}
+
+    \begin{block}{Key Limitation}
+        Standard UniverSeg does not propagate information between neighboring slices.
+    \end{block}
+
+    \vspace{1em}
+
+    \begin{itemize}
+        \item Each slice is inferred independently
+        \item No memory of previous predictions
+        \item Spatial continuity is not enforced
+    \end{itemize}
+
+    \vspace{1em}
+
+    \centering
+    This motivates the proposed ICS framework.
+
+\end{frame}
+
+% SECTION 3 — METHOD
+
+\section{Method}
+
+% ICS Overview
+\subsection{ICS Overview}
+
+\begin{frame}
+    \frametitle{In-context Cascade Segmentation (ICS)}
+    \framesubtitle{Main Idea}
+
+    \centering
+
+    % Insert Figure 2 here
+    % \includegraphics[width=0.92\textwidth]{figures/ics_overview.png}
+
+\end{frame}
+
+\begin{frame}
+    \frametitle{Key Concept of ICS}
+    \framesubtitle{Sequential Information Propagation}
+
+    \begin{enumerate}
+        \item Start with a small labeled support set
+        \item Predict neighboring slices sequentially
+        \item Add predicted masks into the support set
+        \item Propagate information forward and backward
+    \end{enumerate}
+
+    \vspace{1em}
+
+    \begin{block}{Main Benefit}
+        Improves inter-slice consistency without retraining.
+    \end{block}
+
+\end{frame}
+
+% Sequential Propagation
+\subsection{Sequential Propagation}
+
+\begin{frame}
+    \frametitle{Forward and Backward Inference}
+    \framesubtitle{Bidirectional Segmentation}
+
+    \begin{columns}[T]
+
+        \column{0.48\textwidth}
+
+        \textbf{Forward Inference}
+
+        \begin{itemize}
+            \item Predict subsequent slices
+            \item Update support set continuously
+        \end{itemize}
+
+        \column{0.48\textwidth}
+
+        \textbf{Backward Inference}
+
+        \begin{itemize}
+            \item Predict previous slices
+            \item Maintain consistency in both directions
+        \end{itemize}
+
+    \end{columns}
+
+    \vspace{1em}
+
+    % Optional: add directional diagram
+
+\end{frame}
+
+% Algorithm Workflow
+\subsection{Algorithm Workflow}
+
+\begin{frame}
+    \frametitle{ICS Algorithm Workflow}
+    \framesubtitle{Step-by-step Procedure}
+
+    \begin{center}
+    \begin{tikzpicture}[
+        node distance=1.8cm,
+        every node/.style={draw, rounded corners, align=center, minimum width=2.5cm, minimum height=0.9cm},
+        >=Latex
+    ]
+
+    \node (start) {Initial Support Set};
+    \node (predict) [below=of start] {Predict Next Slice};
+    \node (update) [below=of predict] {Update Support Set};
+    \node (repeat) [below=of update] {Repeat Sequentially};
+
+    \draw[->] (start) -- (predict);
+    \draw[->] (predict) -- (update);
+    \draw[->] (update) -- (repeat);
+
+    \end{tikzpicture}
+    \end{center}
+
+\end{frame}
+
+% Why ICS Works
+\subsection{Why ICS Works}
+
+\begin{frame}
+    \frametitle{Why ICS Improves Segmentation}
+    \framesubtitle{Intuition Behind the Method}
+
+    \begin{itemize}
+        \item Adjacent slices contain similar anatomical structures
+
+        \item Previously predicted masks provide contextual guidance
+
+        \item Sequential propagation stabilizes segmentation boundaries
+
+        \item Information continuity improves robustness
+    \end{itemize}
+
+\end{frame}
+
+% SECTION 4 — EXPERIMENTS
+
+\section{Experiments}
+
+% Dataset
+\subsection{Dataset}
+
+\begin{frame}
+    \frametitle{HVSMR Dataset}
+    \framesubtitle{Cardiac MRI Segmentation Benchmark}
+
+    \begin{itemize}
+        \item 60 cardiovascular MRI scans
+        \item 8 anatomical regions:
+        \begin{itemize}
+            \item LV, RV, LA, RA
+            \item AO, PA, SVC, IVC
         \end{itemize}
     \end{itemize}
+
+    \vspace{1em}
+
+    % Suggested visual:
+    % Cardiac anatomy illustration
+
 \end{frame}
 
-\section{Usage}
+% Experimental Setup
+\subsection{Experimental Setup}
 
-\subsection{Background Image and White Logo}
+\begin{frame}
+    \frametitle{Experimental Setup}
+    \framesubtitle{Evaluation Protocol}
 
-% starts a new TeX group to make changes to logo color and background image only locally
-{
-    \logowhite
-    \setbeamertemplate{background}{%
-        \begin{tikzpicture}[remember picture, overlay]
-            \node at (current page.center) [outer sep=0pt, inner sep=0pt] {\includegraphics[height=\paperheight]{images/amwen.jpg}};
-        \end{tikzpicture}%
-    }
-    \setbeamercolor{footline}{fg=weiss, bg=grau2}
-    \additionalfootlinecontent{Custom text and logo here: \raisebox{-0.5mm}{\includegraphics[height=3mm]{images/logo-white.pdf}}}
-
-    \begin{frame}{\color{gruen3}Frame title \color{weiss}can be \color{lila2} set to \color{blau1} custom colors, \color{grau2}too}
-        \begin{block}{}
-            Macro \texttt{\textbackslash logowhite} changes the OTH-AW logo to white \textit{for all following slides}.\par
-            Use \texttt{\textbackslash logocolor} to switch back to the colored version of the OTH-AW logo.\\
-            Alternatively, use a \TeX{} group to apply changes only locally (see code).
-        \end{block}
-        \vspace{5mm}
-        \centering\pgfsetfillopacity{0.5}\colorbox{schwarz}{\parbox{0.75\textwidth}{\pgfsetfillopacity{1}\centering\color{weiss}\bfseries However, using a background image is generally not advised\\as text legibility is significantly worse!}}\par
-        \vspace{2mm}
-        \centering\pgfsetfillopacity{0.5}\colorbox{schwarz}{\parbox{0.75\textwidth}{\pgfsetfillopacity{1}\centering\color{weiss}Changing the color of the footline is also possible (see code).}}
-        \vspace{5mm}
-        \begin{block}{}
-            It is also possible to display custom information between (sub)title and date using the \texttt{\textbackslash additionalfootlinecontent} macro.
-        \end{block}
-    \end{frame}
-}
-% end the TeX group, i.e., restore all previous settings for logo color and background image
-
-
-\subsection{Annotations}
-\begin{annotation}
     \begin{itemize}
-        \item Annotations to the last slide
-        \item Two environment names available: \texttt{annotation} and \texttt{erlaeuterung}
-        \item Can be enabled using option \texttt{annotate}
-        \item Frame counter does not increase
+        \item Baseline: Standard UniverSeg
+        \item Metric: Dice Similarity Coefficient (DSC)
+        \item Support set size varied from 1 to 5
+        \item Forward and backward propagation evaluated
     \end{itemize}
-\end{annotation}
 
-\begin{erlaeuterung}
-    You can have multiple annotation slides chained together.
-\end{erlaeuterung}
-
-\subsection{Empty Frame Titles}
-\begin{frame}
-    \begin{center}
-        If the \textit{frametitle} is empty, no title and\\
-        no orange line are displayed in the top left corner.\\[1cm]
-        Use this for large diagrams.
-    \end{center}
 \end{frame}
 
-\begin{frame}
-    \frametitle{{}}
-    \begin{center}
-        However, if you specify \texttt{\textbackslash{}frametitle\{\{\}\}},\\
-        the title not displayed but it affects layout\footnote[6]{The next slide has a title, but notice how the layout is not affected}.\\[1cm]
-        Use this when your diagram obstructs the OTH logo.
-    \end{center}
-\end{frame}
+% SECTION 5 — RESULTS
+
+\section{Results}
+
+% Quantitative Results
+\subsection{Quantitative Results}
 
 \begin{frame}
-    \frametitle{Now with text}
-    \framesubtitle{And even more text}
-    \begin{center}
-        However, if you specify \texttt{\textbackslash{}frametitle\{\{\}\}},\\
-        the title not displayed but it affects layout\footnote[6]{\hspace*{\widthof{The next}-\widthof{This}}This slide has a title, but notice how the layout is not affected}.\\[1cm]
-        Use this when your diagram obstructs the OTH logo.
-    \end{center}
-\end{frame}
+    \frametitle{Quantitative Results}
+    \framesubtitle{Dice Similarity Coefficient Comparison}
 
-
-\section{Demo Pages}
-\subsection{Demo Page \#1}
-\subsubsection{Subsubsections work in toc=fancy, too, but do not make their title too long}
-
-\begin{frame}
-    \frametitle{Frametitle}
-    \framesubtitle{Frame subtitle}
-
-    \begin{center}
-        You can safely delete all frames before using this template
-    \end{center}
-\end{frame}
-
-\subsubsection{Second subsubsection}
-\begin{frame}
-    \frametitle{Frametitle}
-    \framesubtitle{Frame subtitle}
-
-    \begin{center}
-        You can safely delete all frames before using this template
-    \end{center}
-\end{frame}
-
-\subsection{Demo Page \#2}
-\begin{frame}
-    \frametitle{Important Stuff}
-    \framesubtitle{Always use a subtitle to make things look beautiful}
-
-    \begin{block}{Title of this block}
-        Very important content: $E = mc^2$ \qed
-    \end{block}
-\end{frame}
-
-\subsection{Break Pages (Newly Added Stuff)}
-
-\begin{breakframe}
-    This is a break frame\\\normalsize\mdseries Use it to plan breaks during your presentation
-\end{breakframe}
-
-\subsection{Colors}
-\usetikzlibrary{math}
-\begin{frame}{OTH Corporate Design Color Scheme}
     \centering
-    \begin{tikzpicture}[inner sep=0pt]
-        \tikzmath{\w=2.5;\h=1.6;}%
-        \foreach \s/\tc [count=\y] in {1/white,2/white,3/black,4/black}{
-            \foreach \c [count=\x] in {orange, blau, cyan, gruen, lila, grau}{
-                \node (\c-\s) at (\x*\w cm, -\y*\h cm) [rectangle, fill=\c\s, inner sep=0pt, outer sep=0pt, minimum width=\w cm - 1mm, minimum height=\h cm - 1mm] {};
-                \node at (\c-\s) [color=\tc,text width=\w cm, align=center] {\c\s\\\convertcolorspec{named}{\c\s}{RGB}\tmp\tmp\\\convertcolorspec{named}{\c\s}{HTML}\tmp\#\tmp};
-            }
-        }
-    \end{tikzpicture}%
+
+    % Insert Table 1
+    % Insert Figure 3
+
+    \vspace{1em}
+
+    \begin{block}{Observation}
+        ICS significantly improves segmentation performance in several anatomical regions.
+    \end{block}
+
 \end{frame}
 
-\subsection{Warnings}
-\begin{frame}
-    \frametitle{This is a very, very long title to demonstrate what can go wrong whilst making a plea to the user}
-    \begin{center}
-        Don't do that
-    \end{center}
-\end{frame}
-
-\section*{Tailing section*'s do not affect TOC layout anymore}
+% Qualitative Results
+\subsection{Qualitative Results}
 
 \begin{frame}
-    \frametitle{The End}
-    \begin{center}
-        \scalebox{2}{Any questions left?}\\[1cm]
-        There are multiple ways to end your presentation\\[2mm]\onslide<2->{Choose one}
-    \end{center}
+    \frametitle{Qualitative Results: PA Region}
+    \framesubtitle{Successful Sequential Consistency}
+
+    \centering
+
+    % Insert Figure 4
+
 \end{frame}
 
-\begin{contactframe}
-\end{contactframe}
+\begin{frame}
+    \frametitle{Qualitative Results: LV Region}
+    \framesubtitle{Failure and Over-segmentation Example}
 
+    \centering
+
+    % Insert Figure 5
+
+\end{frame}
+
+% Slice Consistency
+\subsection{Slice Consistency Analysis}
+
+\begin{frame}
+    \frametitle{Slice-by-Slice Consistency}
+    \framesubtitle{Sequential Stability Analysis}
+
+    \centering
+
+    % Insert Figure 6
+
+\end{frame}
+
+% Ablation Studies
+\subsection{Ablation Studies}
+
+\begin{frame}
+    \frametitle{Effect of Support Slice Count}
+    \framesubtitle{Influence of Initial Support Size}
+
+    \centering
+
+    % Insert Figure 7
+
+\end{frame}
+
+\begin{frame}
+    \frametitle{Effect of Initial Slice Position}
+    \framesubtitle{Sensitivity to Initialization}
+
+    \centering
+
+    % Insert Figure 8
+
+\end{frame}
+
+% SECTION 6 — DISCUSSION
+
+\section{Discussion}
+
+% Strengths
+\subsection{Strengths of ICS}
+
+\begin{frame}
+    \frametitle{Strengths of ICS}
+    \framesubtitle{Advantages of the Proposed Method}
+
+    \begin{itemize}
+        \item Improved inter-slice consistency
+        \item Reduced annotation requirements
+        \item No additional retraining required
+        \item Strong performance in complex anatomical structures
+    \end{itemize}
+
+\end{frame}
+
+% Limitations
+\subsection{Limitations}
+
+\begin{frame}
+    \frametitle{Limitations of ICS}
+    \framesubtitle{Current Challenges}
+
+    \begin{itemize}
+        \item Error accumulation during propagation
+        \item Over-segmentation in some regions
+        \item Sensitivity to initial slice selection
+        \item Computational cost with larger support sets
+    \end{itemize}
+
+\end{frame}
+
+% Future Work
+\subsection{Future Work}
+
+\begin{frame}
+    \frametitle{Future Directions}
+    \framesubtitle{Potential Improvements}
+
+    \begin{itemize}
+        \item Confidence-aware support updates
+        \item Automated support slice selection
+        \item Validation on CT and ultrasound datasets
+        \item Efficiency optimization and model distillation
+    \end{itemize}
+
+\end{frame}
+
+% SECTION 7 — CONCLUSION
+
+\section{Conclusion}
+
+% Conclusion
+\subsection{Key Takeaways}
+
+\begin{frame}
+    \frametitle{Conclusion}
+    \framesubtitle{Main Takeaways}
+
+    \begin{enumerate}
+        \item ICS improves sequential medical image segmentation
+
+        \item Propagating pseudo-support information enhances consistency
+
+        \item The framework reduces annotation burden while maintaining strong performance
+    \end{enumerate}
+
+    \vspace{1em}
+
+    \centering
+    \Large
+    ICS is a promising direction for low-annotation medical segmentation.
+
+\end{frame}
+
+% Thank You
 \begin{thankyouframe}
 \end{thankyouframe}
 
-\end{document}
+% BACKUP SLIDES
 
+\appendix
+
+\section{Backup Slides}
+
+% Backup Slide 1
+\subsection{ICS Pipeline Details}
+
+\begin{frame}
+    \frametitle{ICS Pipeline Details}
+    \framesubtitle{Extended Method Overview}
+
+    % Insert enlarged Figure 2 here
+
+\end{frame}
+
+% Backup Slide 2
+\subsection{Dice Similarity Coefficient}
+
+\begin{frame}
+    \frametitle{Dice Similarity Coefficient (DSC)}
+    \framesubtitle{Evaluation Metric}
+
+    \[
+    DSC = \frac{2|X \cap Y|}{|X| + |Y|}
+    \]
+
+    \vspace{1em}
+
+    \begin{itemize}
+        \item Measures overlap between prediction and ground truth
+        \item DSC = 1 indicates perfect segmentation
+        \item Higher DSC implies better performance
+    \end{itemize}
+
+\end{frame}
+
+% Backup Slide 3
+\subsection{Cardiac Anatomy}
+
+\begin{frame}
+    \frametitle{Cardiac Anatomy Labels}
+    \framesubtitle{HVSMR Dataset Structures}
+
+    \begin{itemize}
+        \item LV — Left Ventricle
+        \item RV — Right Ventricle
+        \item LA — Left Atrium
+        \item RA — Right Atrium
+        \item AO — Aorta
+        \item PA — Pulmonary Artery
+        \item SVC — Superior Vena Cava
+        \item IVC — Inferior Vena Cava
+    \end{itemize}
+
+    \vspace{1em}
+
+    % Insert anatomy illustration here
+
+\end{frame}
+
+% Backup Slide 4
+\subsection{Support Set Sensitivity}
+
+\begin{frame}
+    \frametitle{Support Set Sensitivity}
+    \framesubtitle{Effect of Support Slice Count}
+
+    % Insert Figure 7 here
+
+\end{frame}
+
+% Backup Slide 5
+\subsection{Initialization Sensitivity}
+
+\begin{frame}
+    \frametitle{Initialization Sensitivity}
+    \framesubtitle{Effect of Initial Slice Position}
+
+    % Insert Figure 8 here
+
+\end{frame}
+
+% Backup Slide 6
+\subsection{Error Propagation}
+
+\begin{frame}
+    \frametitle{Error Propagation in ICS}
+    \framesubtitle{Potential Failure Mechanism}
+
+    \begin{itemize}
+        \item Incorrect pseudo-labels may propagate errors
+        \item Early segmentation mistakes can accumulate
+        \item Over-segmentation may affect subsequent slices
+    \end{itemize}
+
+    \vspace{1em}
+
+    % Optional: failure visualization
+
+\end{frame}
+
+% Backup Slide 7
+\subsection{Computational Considerations}
+
+\begin{frame}
+    \frametitle{Computational Considerations}
+    \framesubtitle{Inference and Efficiency}
+
+    \begin{itemize}
+        \item ICS avoids retraining and fine-tuning
+        \item Sequential inference introduces additional overhead
+        \item Larger support sets increase computation
+        \item Tradeoff between robustness and efficiency
+    \end{itemize}
+
+\end{frame}
+
+% Backup Slide 8
+\subsection{Method Comparison}
+
+\begin{frame}
+    \frametitle{Comparison with Alternative Approaches}
+    \framesubtitle{Conceptual Comparison}
+
+    \begin{table}
+    \centering
+    \begin{tabular}{lccc}
+        \toprule
+        Method & Sequential & Retraining & Few-shot \\
+        \midrule
+        U-Net & No & Yes & No \\
+        UniverSeg & No & No & Yes \\
+        Recurrent Models & Yes & Yes & No \\
+        ICS & Yes & No & Yes \\
+        \bottomrule
+    \end{tabular}
+    \end{table}
+
+\end{frame}
+\end{document}
