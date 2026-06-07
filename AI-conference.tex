@@ -2,7 +2,7 @@
 
 % Packages
 \usepackage{graphicx}
-\usepackage{animate}
+\usepackage[draft]{animate}
 \usepackage{booktabs}
 \usepackage{amsmath}
 \usepackage{tikz}
@@ -974,60 +974,6 @@
     Augmentation: rotations 90°/180°/270° at each step.
     UniverSeg weights remain \textbf{frozen} throughout.
     }
-
-\end{frame}
-
-% Backup Slide 4 — Generalization Gap Diagram
-\begin{frame}
-    \frametitle{The Generalization Gap}
-    \framesubtitle{Why Fixed Models Break in the Real World}
-
-    \centering
-    \begin{tikzpicture}[
-        train/.style={draw=orange1, fill=orange4, rounded corners=4pt,
-                      minimum width=2.8cm, minimum height=0.9cm,
-                      font=\small\bfseries, align=center, text=grau1},
-        model/.style={draw=grau1, fill=grau4, rounded corners=4pt,
-                      minimum width=2.2cm, minimum height=0.9cm,
-                      font=\small\bfseries, align=center, text=grau1},
-        fail/.style={draw=lila1, fill=lila1med, rounded corners=4pt,
-                     minimum width=2.8cm, minimum height=0.9cm,
-                     font=\small\bfseries, align=center, text=lila1},
-        arr/.style={-{Stealth[length=6pt]}, grau2, line width=1pt},
-        farr/.style={-{Stealth[length=6pt]}, lila1, line width=1pt, dashed},
-        lbl/.style={font=\scriptsize, text=grau2, align=center}
-    ]
-        % ---- ROW 1: Domain Shift ----
-        \node[train] (t1) {CT Scans\\{\tiny Hospital A}};
-        \node[model, right=1.0cm of t1] (m1) {Trained\\Model};
-        \node[fail, right=1.0cm of m1] (f1) {MRI Scans\\{\tiny Hospital B}};
-        \draw[arr] (t1) -- (m1);
-        \draw[farr] (m1) -- (f1);
-        \node[text=lila1, font=\Large\bfseries, right=0.2cm of f1] {$\times$};
-        \node[lbl, above=0.15cm of t1] {Train};
-        \node[lbl, above=0.15cm of f1] {Deploy};
-        \node[lbl, right=0.8cm of f1, text=lila1] {Domain\\shift};
-
-        % ---- ROW 2: Modality Shift ----
-        \node[train, below=1.0cm of t1] (t2) {Brain MRI\\{\tiny Tumour}};
-        \node[model, right=1.0cm of t2] (m2) {Same\\Model};
-        \node[fail, right=1.0cm of m2] (f2) {Cardiac MRI\\{\tiny New organ}};
-        \draw[arr] (t2) -- (m2);
-        \draw[farr] (m2) -- (f2);
-        \node[text=lila1, font=\Large\bfseries, right=0.2cm of f2] {$\times$};
-        \node[lbl, right=0.8cm of f2, text=lila1] {Modality\\shift};
-
-        % ---- ROW 3: Site Shift ----
-        \node[train, below=1.0cm of t2] (t3) {Scanner A\\{\tiny 1.5T MRI}};
-        \node[model, right=1.0cm of t3] (m3) {Same\\Model};
-        \node[fail, right=1.0cm of m3] (f3) {Scanner B\\{\tiny 3T MRI}};
-        \draw[arr] (t3) -- (m3);
-        \draw[farr] (m3) -- (f3);
-        \node[text=lila1, font=\Large\bfseries, right=0.2cm of f3] {$\times$};
-        \node[lbl, right=0.8cm of f3, text=lila1] {Site\\shift};
-
-    \end{tikzpicture}
-
 
 \end{frame}
 
