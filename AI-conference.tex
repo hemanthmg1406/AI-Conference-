@@ -2,7 +2,7 @@
 
 % Packages
 \usepackage{graphicx}
-\usepackage[draft]{animate}
+\usepackage{animate}
 \usepackage{booktabs}
 \usepackage{amsmath}
 \usepackage{tikz}
@@ -12,6 +12,7 @@
 \usepackage{subcaption}
 \usepackage{colortbl}
 \usepackage{svg}
+\usepackage{media9}
 
 \usetikzlibrary{positioning, arrows.meta, shapes.geometric}
 
@@ -42,7 +43,7 @@
 \def\inserttoctitle{Overview}
 
 
-%\includeonlyframes{current}
+%\includeonlyframes{method2}
 
 % ============================================================
 \begin{document}
@@ -163,25 +164,29 @@
 
 % --- Slide 2 ---
 \subsection{The Need for Segmentation}
-\begin{frame}
-    \frametitle{The Need for Segmentation}
-    \framesubtitle{Why Automating Medical Image Analysis Matters}
-
-    AI research in healthcare has grown rapidly driven by significant
-    progress in \textcolor{orange1}{\textbf{deep learning}} techniques.
-
-    \vspace{0.8em}
-
-    Automating the segmentation of CT and MRI sequences is vital for
-    \textcolor{orange1}{\textbf{surgical planning}},
-    \textcolor{orange1}{\textbf{radiotherapy}}, and
-    \textcolor{orange1}{\textbf{monitoring cancer treatment}}.
-
-    \vspace{0.8em}
-
-    The high costs and manual labor involved in these tasks create an
-    urgent demand for \textcolor{orange1}{\textbf{automated solutions}}.
-
+\begin{frame}[plain]
+    \begin{tikzpicture}[remember picture, overlay]
+        % Full-page image
+        \node[anchor=center] at (current page.center) {%
+            \includegraphics[width=\paperwidth, height=\paperheight]{images/segment_conv.png}%
+        };
+        % Semi-transparent orange banner at top
+        \fill[orange1, opacity=0.82]
+            (current page.north west) rectangle
+            ([yshift=-1.2cm] current page.north east);
+        % Title text
+        \node[anchor=west, text=weiss, font=\large\bfseries, inner sep=0pt]
+            at ([xshift=0.5cm, yshift=-0.6cm] current page.north west)
+            {The Need for Segmentation};
+        % Subtitle text
+        \node[anchor=west, text=weiss, font=\small\mdseries, inner sep=0pt]
+            at ([xshift=0.5cm, yshift=-1.0cm] current page.north west)
+            {Why Automating Medical Image Analysis Matters};
+        % Source attribution
+        \node[anchor=south east, inner sep=4pt] at (current page.south east) {%
+            {\tiny\textcolor{weiss}{Source: Mazurowski et al., \textit{Nature Communications} 15, 654 (2024). \url{https://doi.org/10.1038/s41467-024-44824-z}}}%
+        };
+    \end{tikzpicture}
 \end{frame}
 
 % --- Slide 3 ---
@@ -247,16 +252,99 @@
 
 \end{frame}
 
-% --- Slide 3 ---
+% --- Generalization Gap slides ---
 \subsection{The Generalization Gap}
-\begin{frame}
+
+% figure macro — #1 = number of rows to show (1, 2, or 3)
+\newcommand{\gengapfigure}[1]{%
+\begin{tikzpicture}[
+    train/.style={draw=orange1, fill=orange4, rounded corners=4pt,
+                  minimum width=2.4cm, minimum height=0.8cm,
+                  font=\small\bfseries, align=center, text=grau1},
+    model/.style={draw=grau1, fill=grau4, rounded corners=4pt,
+                  minimum width=1.9cm, minimum height=0.8cm,
+                  font=\small\bfseries, align=center, text=grau1},
+    fail/.style={draw=lila1, fill=lila1med, rounded corners=4pt,
+                 minimum width=2.4cm, minimum height=0.8cm,
+                 font=\small\bfseries, align=center, text=lila1},
+    arr/.style={-{Stealth[length=5pt]}, grau2, line width=0.9pt},
+    farr/.style={-{Stealth[length=5pt]}, lila1, line width=0.9pt, dashed},
+    lbl/.style={font=\tiny, text=grau2, align=center}
+]
+    % Row 1 — always visible
+    \node[train] (t1) {CT Scans\\{\tiny Hospital A}};
+    \node[model, right=0.7cm of t1] (m1) {Trained\\Model};
+    \node[fail, right=0.7cm of m1] (f1) {MRI Scans\\{\tiny Hospital B}};
+    \draw[arr] (t1) -- (m1);
+    \draw[farr] (m1) -- (f1);
+    \node[text=lila1, font=\large\bfseries, right=0.15cm of f1] {$\times$};
+    \node[lbl, above=0.12cm of t1] {Train};
+    \node[lbl, above=0.12cm of f1] {Deploy};
+
+    % Row 2 — visible from slide 2 onward
+    \ifnum#1>1
+        \node[train, below=0.8cm of t1] (t2) {Brain MRI\\{\tiny Tumour}};
+        \node[model, right=0.7cm of t2] (m2) {Same\\Model};
+        \node[fail, right=0.7cm of m2] (f2) {Cardiac MRI\\{\tiny New organ}};
+        \draw[arr] (t2) -- (m2);
+        \draw[farr] (m2) -- (f2);
+        \node[text=lila1, font=\large\bfseries, right=0.15cm of f2] {$\times$};
+    \fi
+
+    % Row 3 — visible on slide 3 only
+    \ifnum#1>2
+        \node[train, below=0.8cm of t2] (t3) {Scanner A\\{\tiny 1.5T MRI}};
+        \node[model, right=0.7cm of t3] (m3) {Same\\Model};
+        \node[fail, right=0.7cm of m3] (f3) {Scanner B\\{\tiny 3T MRI}};
+        \draw[arr] (t3) -- (m3);
+        \draw[farr] (m3) -- (f3);
+        \node[text=lila1, font=\large\bfseries, right=0.15cm of f3] {$\times$};
+    \fi
+\end{tikzpicture}%
+}
+
+% --- Slide 3a: Domain Shift + Row 1 ---
+\begin{frame}[t, label=gengap1]
     \frametitle{The Generalization Gap}
     \framesubtitle{Where the current model lacks}
+    \begin{columns}[T]
+        \column{0.43\textwidth}
+            \vspace{0.6cm}
+            \textcolor{orange1}{\textbf{Domain shift:}} Training data often fails when patient
+            groups or imaging rules change.
+        \column{0.54\textwidth}
+            \centering
+            \gengapfigure{1}
+    \end{columns}
+\end{frame}
 
-    \begin{columns}[c]
+% --- Slide 3b: Domain + Modality Shift + Rows 1-2 ---
+\begin{frame}[t, label=gengap2]
+    \frametitle{The Generalization Gap}
+    \framesubtitle{Where the current model lacks}
+    \begin{columns}[T]
+        \column{0.43\textwidth}
+            \vspace{0.6cm}
+            \textcolor{orange1}{\textbf{Domain shift:}} Training data often fails when patient
+            groups or imaging rules change.
 
-        \column{0.40\textwidth}
+            \vspace{0.6em}
 
+            \textcolor{orange1}{\textbf{Modality shift:}} Models cannot switch between scan types
+            like CT to MRI without being retrained.
+        \column{0.54\textwidth}
+            \centering
+            \gengapfigure{2}
+    \end{columns}
+\end{frame}
+
+% --- Slide 3c: All three shifts + all rows ---
+\begin{frame}[t, label=gengap3]
+    \frametitle{The Generalization Gap}
+    \framesubtitle{Where the current model lacks}
+    \begin{columns}[T]
+        \column{0.43\textwidth}
+            \vspace{0.6cm}
             \textcolor{orange1}{\textbf{Domain shift:}} Training data often fails when patient
             groups or imaging rules change.
 
@@ -269,54 +357,10 @@
 
             \textcolor{orange1}{\textbf{Site shift:}} Differences in hospital scanners and procedures
             lead to errors when using models at a new site.
-
-        \column{0.57\textwidth}
+        \column{0.54\textwidth}
             \centering
-            \begin{tikzpicture}[
-                train/.style={draw=orange1, fill=orange4, rounded corners=4pt,
-                              minimum width=2.4cm, minimum height=0.8cm,
-                              font=\small\bfseries, align=center, text=grau1},
-                model/.style={draw=grau1, fill=grau4, rounded corners=4pt,
-                              minimum width=1.9cm, minimum height=0.8cm,
-                              font=\small\bfseries, align=center, text=grau1},
-                fail/.style={draw=lila1, fill=lila1med, rounded corners=4pt,
-                             minimum width=2.4cm, minimum height=0.8cm,
-                             font=\small\bfseries, align=center, text=lila1},
-                arr/.style={-{Stealth[length=5pt]}, grau2, line width=0.9pt},
-                farr/.style={-{Stealth[length=5pt]}, lila1, line width=0.9pt, dashed},
-                lbl/.style={font=\tiny, text=grau2, align=center}
-            ]
-                \node[train] (t1) {CT Scans\\{\tiny Hospital A}};
-                \node[model, right=0.7cm of t1] (m1) {Trained\\Model};
-                \node[fail, right=0.7cm of m1] (f1) {MRI Scans\\{\tiny Hospital B}};
-                \draw[arr] (t1) -- (m1);
-                \draw[farr] (m1) -- (f1);
-                \node[text=lila1, font=\large\bfseries, right=0.15cm of f1] {$\times$};
-                \node[lbl, above=0.12cm of t1] {Train};
-                \node[lbl, above=0.12cm of f1] {Deploy};
-
-                \node[train, below=0.8cm of t1] (t2) {Brain MRI\\{\tiny Tumour}};
-                \node[model, right=0.7cm of t2] (m2) {Same\\Model};
-                \node[fail, right=0.7cm of m2] (f2) {Cardiac MRI\\{\tiny New organ}};
-                \draw[arr] (t2) -- (m2);
-                \draw[farr] (m2) -- (f2);
-                \node[text=lila1, font=\large\bfseries, right=0.15cm of f2] {$\times$};
-
-                \node[train, below=0.8cm of t2] (t3) {Scanner A\\{\tiny 1.5T MRI}};
-                \node[model, right=0.7cm of t3] (m3) {Same\\Model};
-                \node[fail, right=0.7cm of m3] (f3) {Scanner B\\{\tiny 3T MRI}};
-                \draw[arr] (t3) -- (m3);
-                \draw[farr] (m3) -- (f3);
-                \node[text=lila1, font=\large\bfseries, right=0.15cm of f3] {$\times$};
-            \end{tikzpicture}
-
+            \gengapfigure{3}
     \end{columns}
-
-    \vspace{0.3em}
-    \begin{alertblock}{}
-        \centering
-        Every shift requires \textbf{new annotations} and \textbf{retraining} from scratch.
-    \end{alertblock}
 
 \end{frame}
 
@@ -336,7 +380,7 @@
 
 % --- Slide 4 ---
 \subsection{Medical Image Segmentation}
-\begin{frame}
+\begin{frame}[label=relworks1]
     \frametitle{Medical Image Segmentation}
     \framesubtitle{From Classical ML to Foundation Models}
 
@@ -348,7 +392,7 @@
 
     \textcolor{orange1}{\textbf{Deep learning}} revolutionized the field by
     enabling automatic feature extraction with architectures like
-    \textbf{U-Net} becoming the standard for high-precision
+    \textbf{U-Net} becoming the standard for high precision
     segmentation.\textsuperscript{[1,3]}
 
     \vspace{0.7em}
@@ -358,11 +402,14 @@
     \textbf{UniverSeg} which achieve high accuracy even with
     minimal annotations.\textsuperscript{[1]}
 
+    \vspace{0.3em}
+    {\tiny\textcolor{grau2}{Sources: \href{https://pubmed.ncbi.nlm.nih.gov/11701515/}{Pham et al., 2000} \quad \href{https://ieeexplore.ieee.org/document/10643318}{Azad et al., 2024} \quad \href{https://arxiv.org/abs/2412.13299}{Takaya \& Yamamoto, 2025}}}
+
 \end{frame}
 
 % --- Slide 6 ---
 \subsection{Semi-supervised Learning}
-\begin{frame}
+\begin{frame}[label=relworks2]
     \frametitle{Semi-supervised Learning}
     \framesubtitle{Self-training, Co-training, and 4S}
 
@@ -379,10 +426,13 @@
 
     \vspace{0.7em}
 
-    Unlike \textbf{4S} which requires costly iterative re-training
+    Unlike \textbf{4S} which requires costly iterative retraining
     the proposed \textcolor{orange1}{\textbf{ICS method}} uses
-    in-context learning to update the support set significantly
+    incontext learning to update the support set significantly
     reducing computational overhead.\textsuperscript{[1,7]}
+
+    \vspace{0.3em}
+    {\tiny\textcolor{grau2}{Sources: \href{https://arxiv.org/abs/2207.14191}{Jiao et al., 2022} \quad \href{https://arxiv.org/abs/2412.13299}{Takaya \& Yamamoto, 2025} \quad \href{https://universeg.csail.mit.edu/}{Butoi et al., 2023}}}
 
 \end{frame}
 
@@ -400,74 +450,132 @@
 % SECTION 3 — METHOD
 % ============================================================
 
-% --- What is In-Context Learning ---
+% --- M0: What is In-Context Learning ---
 \subsection{What is In-Context Learning}
-\begin{frame}
+\begin{frame}[label=method1]
     \frametitle{What is In-Context Learning?}
-    \framesubtitle{Adapting to New Tasks Without Updating Weights}
 
-    In-context learning allows AI models to perform new tasks simply by
-    observing a \textcolor{orange1}{\textbf{few examples provided in the prompt}}
-    without needing to permanently update their internal weights or undergo
-    formal retraining.
+    \begin{columns}[T]
+        \column{0.48\textwidth}
+            \vspace{0.3cm}
+            \includegraphics[width=\linewidth]{images/icl.png}
 
-    \vspace{0.8em}
+        \column{0.48\textwidth}
+            \vspace{0.6cm}
+            \begin{itemize}
+                \item Provide examples directly in the prompt.
 
-    It operates on a \textcolor{orange1}{\textbf{"learning by showing}} principle
-    where the model analyzes the patterns structure and logic in your provided
-    examples and then instantly applies that exact logic to solve the new input.
+                \vspace{0.5em}
+                \item No model weight updates required.
 
-    \vspace{0.8em}
-
-    This approach makes the model \textcolor{orange1}{\textbf{highly flexible and
-    cost-effective}} enabling a single model to switch instantly between entirely
-    different tasks.
+                \vspace{0.5em}
+                \item Learns patterns directly at inference.
+            \end{itemize}
+    \end{columns}
 
 \end{frame}
 
-% --- M1: In-Context Learning in Depth ---
+% --- M1: ICL applied to segmentation ---
 \subsection{In-Context Learning Example}
-\begin{frame}
-    \frametitle{Simple understanding which relates to segmentation}
-    \framesubtitle{Adapting to New Tasks Without Retraining}
+\begin{frame}[label=method2]
+    \frametitle{In-Context Learning for Segmentation}
+    \framesubtitle{Annotated cardiac slices as in-context examples — no gradient updates}
 
-    \textcolor{orange1}{\textbf{Task Context:}} German to English translation.
+    \begin{tikzpicture}[
+        arr/.style={->, line width=1.0pt, color=grau1},
+        img/.style={inner sep=1.5pt, draw=grau3, line width=0.5pt},
+        lbl/.style={font=\scriptsize\bfseries, text=grau1},
+    ]
 
-    \vspace{0.7em}
+    \def\is{1.55cm}
 
-    \textcolor{orange1}{\textbf{Input Examples:}}
-    Hallo $\rightarrow$ Hello and Apfel $\rightarrow$ Apple.
+    % ---- 2x2 support grid ----
+    \node[img] at (0.0,  1.7) {\includegraphics[width=\is,height=\is]{images/icl_ex1_ann.png}};
+    \node[img] at (1.7,  1.7) {\includegraphics[width=\is,height=\is]{images/icl_ex2_ann.png}};
+    \node[img] at (0.0,  0.0) {\includegraphics[width=\is,height=\is]{images/icl_ex3_ann.png}};
+    \node[img] (a4) at (1.7,  0.0) {\includegraphics[width=\is,height=\is]{images/icl_ex4_ann.png}};
+    \node[lbl, anchor=south] at (0.85, 2.52) {\textcolor{orange1}{Annotated support set}};
 
-    \vspace{0.7em}
+    % ---- query image ----
+    \node[img] (q) at (0.85, -2.0) {\includegraphics[width=\is,height=\is]{images/icl_query.png}};
+    \node[lbl, anchor=north] at (0.85, -2.82) {Heart slice};
 
-    \textcolor{orange1}{\textbf{Model Deduction:}} ChatGPT(example) immediately figures out
-    the underlying translation rule from the given pairs.
+    % ---- network box ----
+    \node[inner sep=0pt] (net) at (5.6, -0.15)
+        {\includegraphics[width=3.0cm, height=3.2cm, keepaspectratio]{images/architect.jpg}};
 
-    \vspace{0.7em}
+    % ---- output box ----
+    \node[draw=lila1, fill=schwarz, line width=1.5pt,
+          minimum width=2.0cm, minimum height=2.0cm] (out) at (9.2, -0.15) {};
+    \node[font=\Large\bfseries, text=weiss] at (9.2, -0.15) {?};
+    \node[lbl, anchor=south, text=lila1] at (9.2, 0.92) {Predicted mask};
 
-    \textcolor{orange1}{\textbf{Instant Execution:}} When given a new word 
-    K\"{a}se it translates to
-    Cheese.
+    % ---- arrows ----
+    \draw[arr] (2.55, 0.85)  -- (4.28, 0.2);
+    \draw[arr] (1.65, -2.0)  -- (4.28, -0.55);
+    \draw[arr] (6.93, -0.15) -- (8.18, -0.15);
 
-    \vspace{0.8em}
+    \end{tikzpicture}
 
-    {\tiny\textcolor{grau2}{Source: \href{https://www.digitalocean.com/community/tutorials/_few-shot-prompting-techniques-examples-best-practices}{DigitalOcean: Few-Shot Prompting Techniques, Examples \& Best Practices}}}
+\end{frame}
+
+% --- M1b: Video comparison ---
+\subsection{Segmentation in Action}
+\begin{frame}[label=method3a]
+    \frametitle{Segmentation in Action}
+    \framesubtitle{Normal cardiac MRI vs UniverSeg predictions}
+
+    \begin{columns}[T]
+        \column{0.48\textwidth}
+            \centering
+            {\small\textcolor{orange1}{\textbf{Raw Volume}}}\\[0.4em]
+            \includemedia[
+                width=\linewidth,
+                height=4.22cm,
+                activate=pageopen,
+                transparent,
+                addresource=images/normal.mp4,
+                flashvars={
+                    source=images/normal.mp4
+                    &autoPlay=true
+                    &loop=true
+                }
+            ]{}{VPlayer.swf}
+
+        \column{0.48\textwidth}
+            \centering
+            {\small\textcolor{orange1}{\textbf{UniverSeg Output}}}\\[0.4em]
+            \includemedia[
+                width=\linewidth,
+                height=3.32cm,
+                activate=pageopen,
+                addresource=images/universeg.mp4,
+                flashvars={
+                    source=images/universeg.mp4
+                    &autoPlay=true
+                    &loop=true
+                }
+            ]{}{VPlayer.swf}
+    \end{columns}
 
 \end{frame}
 
 % --- M2: UniverSeg ---
 \subsection{Univeral Segmentation Model (UniverSeg)}
-\begin{frame}
+\begin{frame}[label=method3]
     \frametitle{Univeral Segmentation Model (UniverSeg)}
-    \includegraphics[width=1.0\linewidth, height=1.0\textheight, keepaspectratio]{images/Uniseg}
+    \includegraphics[width=1.0\linewidth, height=0.82\textheight, keepaspectratio]{images/Uniseg}
+
+    {\tiny\textcolor{grau2}{Source: \href{https://universeg.csail.mit.edu/}{Butoi et al., UniverSeg: Universal Medical Image Segmentation, ICCV 2023}}}
 
 \end{frame}
 % --- M3: ICS Architecture ---
 \subsection{ICS Architecture}
-\begin{frame}
+\begin{frame}[label=method4]
     \frametitle{ICS Architecture}
 
     \begin{tikzpicture}[remember picture, overlay]
+        % Background image
         \node[anchor=center, yshift=-0.4cm] at (current page.center) {%
             \includegraphics[width=0.80\textwidth]{fig2.png}%
         };
@@ -475,12 +583,60 @@
 
 \end{frame}
 
+% --- M3b: ICS Architecture Box 1 ---
+\begin{frame}[label=method4b]
+    \frametitle{ICS Architecture}
+    \begin{tikzpicture}[remember picture, overlay]
+        \node[anchor=center, yshift=-0.4cm] at (current page.center) {%
+            \includegraphics[width=0.80\textwidth]{fig2.png}%
+        };
+        % Box 1 — adjust xshift/yshift to move, change corner values to resize
+        \draw[green!70!black, line width=2pt, rounded corners=3pt]
+            ([xshift=1.4cm, yshift=3cm] current page.center)
+            rectangle
+            ([xshift=-1.5cm, yshift=-3.75cm] current page.center);
+    \end{tikzpicture}
+
+\end{frame}
+
+% --- M3c: ICS Architecture Box 2 ---
+\begin{frame}[label=method4c]
+    \frametitle{ICS Architecture}
+    \begin{tikzpicture}[remember picture, overlay]
+        \node[anchor=center, yshift=-0.4cm] at (current page.center) {%
+            \includegraphics[width=0.80\textwidth]{fig2.png}%
+        };
+        % Box 2 — right side
+        \draw[green!70!black, line width=2pt, rounded corners=3pt]
+            ([xshift=2.4cm, yshift=3cm] current page.center)
+            rectangle
+            ([xshift=5.7cm, yshift=-3.75cm] current page.center);
+    \end{tikzpicture}
+
+\end{frame}
+
+% --- M3d: ICS Architecture Box 3 ---
+\begin{frame}[label=method4d]
+    \frametitle{ICS Architecture}
+    \begin{tikzpicture}[remember picture, overlay]
+        \node[anchor=center, yshift=-0.4cm] at (current page.center) {%
+            \includegraphics[width=0.80\textwidth]{fig2.png}%
+        };
+        % Box 3 — left most
+        \draw[green!70!black, line width=2pt, rounded corners=3pt]
+            ([xshift=-5.9cm, yshift=3cm] current page.center)
+            rectangle
+            ([xshift=-2.6cm, yshift=-3.75cm] current page.center);
+    \end{tikzpicture}
+
+\end{frame}
+
 % --- M4: Problem Formulation ---
 \subsection{Problem Formulation}
-\begin{frame}
+\begin{frame}[t, label=method5]
     \frametitle{Problem Formulation}
     \framesubtitle{Implementation of ICS }
-
+    \vspace{-0.1cm}
     We consider a volumetric dataset where each $\text{slice}_k$
     ($1 \le k \le n$) is a 2D cross-sectional image from CT or MRI:
     \[
@@ -489,12 +645,41 @@
 
     Only $m$ slices have ground-truth labels forming the
     \textcolor{orange1}{\textbf{support set}} $S$:
+    \vspace{-0.1cm}   
     \[
         S = \bigl\{(\text{slice}_{\ell_1}, \text{label}_{\ell_1}),\;
                    (\text{slice}_{\ell_2}, \text{label}_{\ell_2}),\;
                    \ldots,\;
                    (\text{slice}_{\ell_m}, \text{label}_{\ell_m})\bigr\}
     \]
+    \vspace{-0.1cm}
+    where $\ell_1, \ell_2, \ldots, \ell_m$ are the labeled slice indices satisfying
+    $1 \le \ell_1 < \ell_2 < \cdots < \ell_m \le n$.
+
+\end{frame}
+
+% --- M4b: Problem Formulation + Objective ---
+\begin{frame}[t, label=method5b]
+    \frametitle{Problem Formulation}
+    \framesubtitle{Implementation of ICS }
+    \vspace{-0.1cm}
+    We consider a volumetric dataset where each $\text{slice}_k$
+    ($1 \le k \le n$) is a 2D cross-sectional image from CT or MRI:
+    \[
+        V = \{\text{slice}_1,\, \text{slice}_2,\, \ldots,\, \text{slice}_n\}
+    \]
+
+    Only $m$ slices have ground-truth labels forming the
+    \textcolor{orange1}{\textbf{support set}} $S$:
+    \vspace{-0.1cm}  
+
+    \[
+        S = \bigl\{(\text{slice}_{\ell_1}, \text{label}_{\ell_1}),\;
+                   (\text{slice}_{\ell_2}, \text{label}_{\ell_2}),\;
+                   \ldots,\;
+                   (\text{slice}_{\ell_m}, \text{label}_{\ell_m})\bigr\}
+    \]
+    \vspace{-0.1cm}
     where $\ell_1, \ell_2, \ldots, \ell_m$ are the labeled slice indices satisfying
     $1 \le \ell_1 < \ell_2 < \cdots < \ell_m \le n$.
 
@@ -510,11 +695,14 @@
     $\hat{M}_k$ has the same dimensions as $\text{slice}_k$ and assigns each pixel
     to its most likely anatomical class or background.
 
+    \vspace{0.3em}
+    {\tiny\textcolor{grau2}{Sources: \href{https://arxiv.org/abs/2412.13299}{Takaya \& Yamamoto, 2025} \quad \href{https://universeg.csail.mit.edu/}{Butoi et al., 2023}}}
+
 \end{frame}
 
 % --- M5: Forward and Backward Inference ---
 \subsection{Forward and Backward Inference}
-\begin{frame}
+\begin{frame}[label=method6]
     \frametitle{Forward \& Backward Inference}
     \framesubtitle{How ICS Propagates Through the Volume}
 
@@ -559,12 +747,12 @@
 
 % --- Slide 13 ---
 \subsection{Dataset}
-\begin{frame}
+\begin{frame}[label=current]
     \frametitle{The HVSMR Dataset}
     \framesubtitle{How our heart looks visually }
 
     \begin{columns}[c]
-        \column{0.45\textwidth}
+        \column{0.35\textwidth}
             The \textcolor{orange1}{\textbf{HVSMR}} dataset contains
             \textbf{60 cardiovascular MRI scans} from Boston Children's
             Hospital covering patients with congenital heart conditions.
@@ -576,9 +764,9 @@
             annotations with automated \textbf{3D-UNet} output followed by
             expert revision.
 
-        \column{0.55\textwidth}
+        \column{0.65\textwidth}
             \centering
-            \animategraphics[loop, autoplay, width=\linewidth]{15}{/Users/hemanthmg/Documents/SlicerCapture/image_}{00000}{00119}
+            \animategraphics[loop, autoplay, width=\linewidth]{30}{/Users/hemanthmg/Documents/SlicerCapture/image_}{00000}{00119}
     \end{columns}
 
 \end{frame}
@@ -775,9 +963,9 @@
 \end{frame}
 
 % --- Slide 19 ---
-\subsection{Slice-by-Slice Consistency}
+\subsection{The DSC score against each slice}
 \begin{frame}
-    \frametitle{Slice-by-Slice Consistency}
+    \frametitle{Pulmonary Artery and Left Ventricle}
     \framesubtitle{Fig.~6 Line Plots}
     \centering
     \includegraphics[width=1.1\textwidth]{fig6.png}
@@ -785,9 +973,9 @@
 
 % --- Slide 20 ---
 \subsection{Effect of Initial Slice Position}
-\begin{frame}
+\begin{frame} 
     \frametitle{Effect of Initial Slice Position}
-    \framesubtitle{Fig.~8 — Placement Sensitivity}
+    \framesubtitle{Line Plot of Aorta and Pulmonary Artery}
     \centering
     \includegraphics[width=0.88\textwidth]{fig8.png}
 \end{frame}
@@ -806,87 +994,63 @@
 
 % --- Slide 21 ---
 \subsection{Discussion}
-\begin{frame}
+\begin{frame}[label=disc1]
     \frametitle{Discussion}
     \framesubtitle{Strengths and Limitations}
 
-    ICS \textcolor{orange1}{\textbf{significantly outperformed}} the baseline in five
-    anatomical regions by maintaining inter-slice consistency and accurately
-    capturing complex structures.
+    \begin{columns}[T]
+        \column{0.48\textwidth}
+            \vspace{0.3cm}
+            \begin{itemize}
+                \item ICS remains consistently accurate on complex structures.
 
-    \vspace{0.5em}
+                \vspace{0.5em}
+                \item Often prone to over-segmenting certain anatomical regions.
 
-    In regions like the \textbf{LV} and \textbf{IVC} ICS exhibited a tendency to
-    \textcolor{orange1}{\textbf{over-segment}} and produce false positives suggesting
-    a need for future confidence metrics during support set updates.
+                \vspace{0.5em}
+                \item Initial support slice distance heavily degrades accuracy.
+            \end{itemize}
 
-    \vspace{0.5em}
+        \column{0.48\textwidth}
+            \vspace{0.2cm}
+            \includegraphics[width=\linewidth]{images/disc_comparison.png}
 
-    Increasing the number of initial support slices improved accuracy and stability
-    but introduced \textcolor{orange1}{\textbf{computational trade-offs}} in inference
-    time and GPU memory usage.
+    \end{columns}
 
-    \vspace{0.5em}
-
-    The \textcolor{orange1}{\textbf{spatial location}} of initial support slices heavily
-    impacted accuracy with performance generally degrading as the distance from the
-    initial position increased.
+    \vspace{0.3em}
+    {\tiny\textcolor{grau2}{Source: \href{https://arxiv.org/abs/2412.13299}{Takaya \& Yamamoto, In-Context Learning for Medical Image Segmentation, 2025}}}
 
 \end{frame}
+
+
 
 % --- Slide 22 ---
-\subsection{Future Work}
-\begin{frame}
-    \frametitle{Future Work}
-    \framesubtitle{Slice Selection, Efficiency, Cross-modality}
-
-    Future research must address the \textcolor{orange1}{\textbf{cold-start problem}}
-    by using approaches like clustering to automatically identify the best initial
-    slices to annotate.
-
-    \vspace{0.6em}
-
-    The current method assumes all slices contain the target region requiring a
-    mechanism to \textcolor{orange1}{\textbf{halt label propagation}} when processing
-    slices that lack the region of interest.
-
-    \vspace{0.6em}
-
-    Because UniverSeg was pre-trained on most public datasets validation was
-    restricted to a \textcolor{orange1}{\textbf{single dataset}} requiring future
-    testing on private datasets and diverse modalities like ultrasound and CT.
-
-\end{frame}
-
-% --- Slide 23 ---
-\subsection{Conclusion}
-\begin{frame}
+\subsection{Conclusion \& Future Work}
+\begin{frame}[label=disc3]
     \frametitle{Conclusion}
     \framesubtitle{Key Takeaways}
 
-    \begin{columns}[t]
-
+    \begin{columns}[T]
         \column{0.48\textwidth}
+            \vspace{0.3cm}
             \begin{itemize}
-                \item ICS reduces annotation burdens by propagating segmentation context
-                      \textcolor{orange1}{\textbf{bidirectionally}} across slices.
-                \item Experiments show \textcolor{orange1}{\textbf{significant improvements}}
-                      in slice-to-slice consistency and complex structure capture.
-                \item Success depends on enough initial support slices and
-                      \textcolor{orange1}{\textbf{positioning them effectively}}.
+                \item ICS reduces annotation burdens by bidirectionally propagating context.
+
+                \vspace{0.5em}
+                \item Key limits include excessive segmentation and memory costs.
+
+                \vspace{0.5em}
+                \item Future research will automate the initial slice selection.
             \end{itemize}
 
         \column{0.48\textwidth}
-            \begin{itemize}
-                \item Key limits include \textcolor{orange1}{\textbf{over-segmentation}}
-                      computational memory costs and finding the right initial slices.
-                \item Future research focuses on optimizing support set updates and
-                      \textcolor{orange1}{\textbf{automating slice selection}}.
-                \item ICS is a strong framework for \textcolor{orange1}{\textbf{low-annotation
-                      clinical segmentation}} with broader modality testing planned.
-            \end{itemize}
+            \vspace{0.2cm}
+            \includegraphics[width=\linewidth]{images/conclusion_roadmap.png}
 
     \end{columns}
+
+    \vspace{0.3em}
+    {\tiny\textcolor{grau2}{Source: \href{https://arxiv.org/abs/2412.13299}{Takaya \& Yamamoto, In-Context Learning for Medical Image Segmentation, 2025}}}
 
 \end{frame}
 
@@ -974,6 +1138,60 @@
     Augmentation: rotations 90°/180°/270° at each step.
     UniverSeg weights remain \textbf{frozen} throughout.
     }
+
+\end{frame}
+
+% --- DSC Explanation ---
+\subsection{Dice Similarity Coefficient}
+\begin{frame}[t, label=dscslide]
+    \frametitle{Dice Similarity Coefficient (DSC)}
+    \framesubtitle{How we measure segmentation quality}
+
+    \begin{columns}[T]
+        \column{0.50\textwidth}
+            \vspace{0.3cm}
+            The DSC measures the overlap between predicted mask $A$ and ground truth $B$:
+            \[
+                \text{DSC} = \frac{2\,|A \cap B|}{|A| + |B|}
+            \]
+
+            \vspace{0.4em}
+            The \textcolor{orange1}{\textbf{factor of 2}} in the numerator normalizes the
+            intersection against both sets so the score remains between 0 and 1.
+
+            \vspace{0.6em}
+            \begin{tabular}{ll}
+                \textcolor{orange1}{\textbf{DSC = 1.0}} & perfect overlap \\[4pt]
+                \textcolor{orange1}{\textbf{DSC = 0.0}} & no overlap at all \\[4pt]
+                \textcolor{grau2}{\textbf{DSC $<$ 0.7}} & generally considered poor \\[4pt]
+                \textcolor{grau2}{\textbf{DSC $\geq$ 0.8}} & clinically acceptable \\
+            \end{tabular}
+
+        \column{0.46\textwidth}
+            \vspace{0.3cm}
+            \centering
+            \begin{tikzpicture}
+                % Circle A
+                \draw[fill=orange4, draw=orange1, opacity=0.8, line width=1.2pt]
+                    (-0.7, 0) circle (1.4cm);
+                % Circle B
+                \draw[fill=lila1med, draw=lila1, opacity=0.8, line width=1.2pt]
+                    (0.7, 0) circle (1.4cm);
+                % Labels
+                \node[font=\small\bfseries, text=orange1] at (-1.4, 0) {$A$};
+                \node[font=\small\bfseries, text=lila1]   at ( 1.4, 0) {$B$};
+                \node[font=\tiny\bfseries,  text=grau1]   at ( 0,   0) {$A \cap B$};
+                % Caption
+                \node[font=\tiny, text=grau2] at (0, -1.9) {Predicted mask vs Ground truth};
+            \end{tikzpicture}
+
+            \vspace{0.8em}
+            \begin{alertblock}{}
+                \centering
+                ICS achieves mean DSC of \textbf{0.739} on HVSMR outperforming the baseline
+                of \textbf{0.587}.
+            \end{alertblock}
+    \end{columns}
 
 \end{frame}
 
